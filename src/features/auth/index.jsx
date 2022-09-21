@@ -1,13 +1,14 @@
-import withSuspense from 'common/withSuspense';
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
 const SignIn = React.lazy(() => import('./signin'));
 
-export default function AuthRouter() {
+function Auth() {
   return (
     <Routes>
-      <Route path="/signin" element={withSuspense(SignIn)()} />
+      <Route path="/signin" element={<SignIn />} />
     </Routes>
   );
 }
+
+export default Auth;

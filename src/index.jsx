@@ -1,21 +1,24 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { Provider } from 'react-redux';
-import getStore from './app/store';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import '@coreui/coreui/dist/css/coreui.min.css';
-import './index.css';
+import { Provider as StoreProvider } from 'react-redux';
+import { ChakraProvider } from '@chakra-ui/react';
+import getStore from 'app/store';
+import App from 'App';
+import reportWebVitals from 'reportWebVitals';
+import 'index.css';
+
+const store = getStore();
 
 const container = document.getElementById('root');
 const root = createRoot(container);
-const store = getStore();
 
 root.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
+    <StoreProvider store={store}>
+      <ChakraProvider>
+        <App />
+      </ChakraProvider>
+    </StoreProvider>
   </React.StrictMode>
 );
 

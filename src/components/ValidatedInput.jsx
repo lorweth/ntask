@@ -1,9 +1,9 @@
-import { CFormInput } from '@coreui/react';
+import { FormControl, FormErrorMessage, FormLabel, Input } from '@chakra-ui/react';
 import React from 'react';
 import { Controller } from 'react-hook-form';
 
 /**
- * ValidatedInput is a wrapper around CFormInput that adds validation
+ * ValidatedInput is a wrapper around Input that adds validation
  *
  * @param {props} props with the following properties:
  * - control: the control object from react-hook-form
@@ -11,7 +11,7 @@ import { Controller } from 'react-hook-form';
  * - type: the type of the input
  * - label: the label of the input
  * - rules: the rules for the input (see https://react-hook-form.com/api/useform/register)
- * @returns the CFormInput with validation
+ * @returns the Input with validation
  */
 export default function ValidatedInput({ control, name, type, label, rules }) {
   return (
@@ -20,17 +20,11 @@ export default function ValidatedInput({ control, name, type, label, rules }) {
       rules={rules}
       control={control}
       render={({ field: { onChange, onBlur, value, ref }, fieldState: { error } }) => (
-        <CFormInput
-          label={label}
-          onChange={onChange}
-          onBlur={onBlur}
-          value={value}
-          name={name}
-          ref={ref}
-          type={type}
-          invalid={!!error}
-          feedbackInvalid={error?.message}
-        />
+        <FormControl isInvalid={!!error}>
+          <FormLabel>{label}</FormLabel>
+          <Input type={type} onChange={onChange} onBlur={onBlur} value={value} ref={ref} />
+          {error && <FormErrorMessage>{error?.message}</FormErrorMessage>}
+        </FormControl>
       )}
     />
   );

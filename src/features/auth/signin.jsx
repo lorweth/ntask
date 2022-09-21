@@ -1,9 +1,10 @@
 import React from 'react';
-import { CButton, CForm } from '@coreui/react';
 import { useForm } from 'react-hook-form';
 import ValidatedInput from 'components/ValidatedInput';
 import ValidatedCheck from 'components/ValidatedCheck';
 import { useDispatch } from 'react-redux';
+import { Box, Button } from '@chakra-ui/react';
+import withSuspense from 'common/withSuspense';
 import { signin } from './authSlice';
 
 const formRules = {
@@ -20,7 +21,7 @@ const formRules = {
   },
 };
 
-export default function SignIn() {
+function SignIn() {
   const dispatch = useDispatch();
 
   const { control, handleSubmit } = useForm({
@@ -36,23 +37,21 @@ export default function SignIn() {
   };
 
   return (
-    <div
-      style={{
+    <Box
+      sx={{
         position: 'absolute',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         top: '50%',
         left: '50%',
-        transform: 'translate(-50%, -70%)',
         width: 500,
-        bgcolor: 'background.paper',
-        boxShadow: 24,
+        boxShadow: 'md',
         p: 4,
       }}
     >
-      <h1 className="h1">Sign In</h1>
-      <CForm noValidate style={{ width: '100%' }} onSubmit={handleSubmit(onSubmit)}>
+      <h1>Sign In</h1>
+      <Box as="form" noValidate style={{ width: '100%' }} onSubmit={handleSubmit(onSubmit)}>
         <ValidatedInput
           control={control}
           name="username"
@@ -71,10 +70,12 @@ export default function SignIn() {
 
         <ValidatedCheck control={control} name="rememberMe" label="Remember me" />
 
-        <CButton color="primary" type="submit">
+        <Button color="primary" type="submit">
           Sign In
-        </CButton>
-      </CForm>
-    </div>
+        </Button>
+      </Box>
+    </Box>
   );
 }
+
+export default withSuspense(SignIn);

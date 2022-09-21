@@ -71,6 +71,9 @@
         "functions": "only-multiline"
       }
     ],
-    "no-param-reassign": ["error", { "props": true, "ignorePropertyModificationsForRegex": ["^state"] }]
+    "no-param-reassign": [
+      "error",
+      { "props": true, "ignorePropertyModificationsForRegex": ["^state"] }
+    ]
   }
 }
