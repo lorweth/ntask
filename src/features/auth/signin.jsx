@@ -4,7 +4,6 @@ import ValidatedInput from 'components/ValidatedInput';
 import ValidatedCheck from 'components/ValidatedCheck';
 import { useDispatch } from 'react-redux';
 import { Box, Button } from '@chakra-ui/react';
-import withSuspense from 'common/withSuspense';
 import { signin } from './authSlice';
 
 const formRules = {
@@ -21,7 +20,7 @@ const formRules = {
   },
 };
 
-function SignIn() {
+export default function SignIn() {
   const dispatch = useDispatch();
 
   const { control, handleSubmit } = useForm({
@@ -77,5 +76,3 @@ function SignIn() {
     </Box>
   );
 }
-
-export default withSuspense(SignIn);

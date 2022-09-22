@@ -6,6 +6,7 @@ import getStore from 'app/store';
 import App from 'App';
 import reportWebVitals from 'reportWebVitals';
 import 'index.css';
+import ToastContainer from 'common/toastify';
 
 const store = getStore();
 
@@ -17,6 +18,7 @@ root.render(
     <StoreProvider store={store}>
       <ChakraProvider>
         <App />
+        <ToastContainer />
       </ChakraProvider>
     </StoreProvider>
   </React.StrictMode>
