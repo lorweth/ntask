@@ -1,22 +1,21 @@
 import React from 'react';
-import { Box, SkeletonText } from '@chakra-ui/react';
+import { Box, Skeleton, SkeletonText } from '@chakra-ui/react';
 
-export function SignInSkeleton() {
+function SignInSkeleton() {
   return (
-    <Box
-      style={{
-        position: 'absolute',
-        left: '50%',
-        top: '50%',
-        transform: 'translate(-50%, -50%)',
-      }}
-    >
-      <SkeletonText mt="4" noOfLines={4} spacing="4" />
-    </Box>
+    <Skeleton
+      h={40}
+      w={60}
+      m={5}
+      pos="absolute"
+      top="40%"
+      left="50%"
+      transform="translate(-40%, -50%)"
+    />
   );
 }
 
-export function SignUpSkeleton() {
+function SignUpSkeleton() {
   return (
     <Box
       style={{

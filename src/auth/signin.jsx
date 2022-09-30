@@ -3,7 +3,9 @@ import { useForm } from 'react-hook-form';
 import ValidatedInput from 'components/ValidatedInput';
 import ValidatedCheck from 'components/ValidatedCheck';
 import { useDispatch } from 'react-redux';
-import { Box, Button, ScaleFade } from '@chakra-ui/react';
+import { Avatar, Box, Button, ScaleFade, Text } from '@chakra-ui/react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { regular } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { signin } from './authSlice';
 
 const formRules = {
@@ -40,7 +42,7 @@ export default function SignIn() {
       style={{
         position: 'absolute',
         left: '50%',
-        top: '50%',
+        top: '40%',
         transform: 'translate(-50%, -50%)',
       }}
     >
@@ -55,7 +57,10 @@ export default function SignIn() {
             p: 4,
           }}
         >
-          <h1>Sign In</h1>
+          <Text fontSize="2xl" fontWeight="bold" mb={4}>
+            <Avatar bg="teal.500" icon={<FontAwesomeIcon icon={regular('user')} />} />
+            &nbsp;Sign In
+          </Text>
           <Box as="form" noValidate style={{ width: '100%' }} onSubmit={handleSubmit(onSubmit)}>
             <ValidatedInput
               control={control}
