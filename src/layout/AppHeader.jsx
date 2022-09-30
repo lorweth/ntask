@@ -33,6 +33,7 @@ export default function AppHeader({ title, brandIcon, ...rest }) {
 
   const { toggleColorMode } = useColorMode();
 
+  const borderBottomColor = useColorModeValue('gray.200', 'gray.700');
   const currColorModeIcon = useColorModeValue(solid('sun'), solid('moon'));
   const adminColor = useColorModeValue('green.500', 'yellow.400');
   const menuListBGColor = useColorModeValue('white', 'gray.900');
@@ -51,7 +52,7 @@ export default function AppHeader({ title, brandIcon, ...rest }) {
       flexDirection="row"
       justifyContent="space-between"
       borderBottom="1px solid"
-      borderBottomColor={useColorModeValue('gray.200', 'gray.700')}
+      borderBottomColor={borderBottomColor}
       px={5}
       py={2}
       h={20}

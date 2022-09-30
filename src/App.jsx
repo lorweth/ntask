@@ -1,10 +1,9 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { chakra } from '@chakra-ui/react';
-import withSuspense from 'common/withSuspense';
-import AppSidebar from 'layout/AppSidebar';
+import { Box, chakra } from '@chakra-ui/react';
+import withSuspense from 'components/withSuspense';
+import Skeletons from 'layout/Skeletons';
 import AppContent from 'layout/AppContent';
-import AppHeader from 'layout/AppHeader';
 
 const StyledContainer = chakra('div', {
   baseStyle: {
@@ -27,6 +26,16 @@ const sidebarItems = [
 ];
 
 export default function App() {
+  const AppHeader = withSuspense(
+    React.lazy(() => import('layout/AppHeader')),
+    <Skeletons.AppHeaderSkeleton />
+  );
+
+  const AppSidebar = withSuspense(
+    React.lazy(() => import('layout/AppSidebar')),
+    <Skeletons.AppSidebarSkeleton />
+  );
+
   const Home = withSuspense(React.lazy(() => import('home')));
   const Counter = withSuspense(React.lazy(() => import('counter')));
   const Auth = withSuspense(React.lazy(() => import('auth')));
@@ -34,15 +43,18 @@ export default function App() {
   return (
     <StyledContainer>
       <BrowserRouter>
-        <AppSidebar title="nTask" brandIcon="logo192.png" items={sidebarItems} pos="fixed" />
-        <AppHeader title="nTask" brandIcon="logo192.png" />
-        <AppContent>
-          <Routes>
-            <Route path="/" index element={<Home username="Vae" />} />
-            <Route path="/counter" element={<Counter />} />
-            <Route path="/auth/*" element={<Auth />} />
-          </Routes>
-        </AppContent>
+        <Box>
+          <AppSidebar title="nTask" brandIcon="/logo192.png" items={sidebarItems} pos="fixed" />
+          <AppHeader title="nTask" brandIcon="/logo192.png" />
+          <AppContent>
+            <Routes>
+              <Route index element={<Home username="Vae" />} />
+              <Route path="/home" element={<Home username="Vae" />} />
+              <Route path="/counter" element={<Counter />} />
+              <Route path="/auth/*" element={<Auth />} />
+            </Routes>
+          </AppContent>
+        </Box>
       </BrowserRouter>
     </StyledContainer>
   );
