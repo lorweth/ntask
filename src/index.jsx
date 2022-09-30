@@ -7,6 +7,9 @@ import App from 'App';
 import reportWebVitals from 'reportWebVitals';
 import 'index.css';
 import ToastContainer from 'common/toastify';
+import loadIcon from 'app/icon-loader';
+
+loadIcon();
 
 const store = getStore();
 
