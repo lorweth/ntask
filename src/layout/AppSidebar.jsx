@@ -46,12 +46,14 @@ function CustomNavLink({ name, path, icon, open }) {
 }
 
 function SidebarContent({ open, title, brandIcon, items, toggleVisibility, ...rest }) {
+  const bgColor = useColorModeValue('gray.200', 'gray.900');
+
   return (
     <Box
       as="aside"
       flexDirection="column"
       transition="2s ease"
-      bg={useColorModeValue('gray.200', 'gray.900')}
+      bg={bgColor}
       h="full"
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...rest}
@@ -81,7 +83,7 @@ function SidebarContent({ open, title, brandIcon, items, toggleVisibility, ...re
   );
 }
 
-export default function Sidebar({ title, brandIcon, items, ...rest }) {
+export default function AppSidebar({ title, brandIcon, items, ...rest }) {
   const dispatch = useDispatch();
 
   const { openSidebar } = useSelector((state) => state.app);
