@@ -40,7 +40,6 @@ export default function App() {
   const Counter = withSuspense(React.lazy(() => import('counter')));
   const Auth = withSuspense(React.lazy(() => import('auth')));
   const EventComponent = withSuspense(React.lazy(() => import('events-mgmt')));
-  const DragDrop = withSuspense(React.lazy(() => import('./dragdrop/DragDrop')));
 
   return (
     <StyledContainer>
@@ -52,9 +51,7 @@ export default function App() {
             <Routes>
               <Route index element={<Home username="Vae" />} />
               <Route path="/home" element={<Home username="Vae" />} />
-              <Route path="/dragdrop" element={<DragDrop />} />
               <Route path="/events" element={<EventComponent />} />
-              <Route path="/dragdrop" element={<DragDrop />} />
               <Route path="/counter" element={<Counter />} />
               <Route path="/auth/*" element={<Auth />} />
             </Routes>
