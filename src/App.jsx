@@ -39,7 +39,7 @@ export default function App() {
   const Home = withSuspense(React.lazy(() => import('home')));
   const Counter = withSuspense(React.lazy(() => import('counter')));
   const Auth = withSuspense(React.lazy(() => import('auth')));
-  const EventComponent = withSuspense(React.lazy(() => import('events-mgmt')));
+  const EventComponent = withSuspense(React.lazy(() => import('drapdrop')));
 
   return (
     <StyledContainer>
