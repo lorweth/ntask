@@ -6,26 +6,9 @@ import AppTable from 'components/AppTable';
 import AppTagEvent from 'components/AppTagEvent';
 import AppCardEvent from 'components/AppCardEvent';
 import AppCalendar from 'components/AppCalendar';
+import AppReminder from 'components/AppReminder';
 import mockData from './mock-data';
 import 'react-calendar/dist/Calendar.css';
-
-/**
- * NoteItem
- *
- * @param {string} title
- * @param {string} color is color of bagde (component in chakra ui) "red" | "green" | "blue" | ...
- * @param {date} endTime
- */
-function NoteItem({ title, color, endTime }) {
-  return (
-    <Box p={2}>
-      <Box p={2} sx={{ borderLeft: `3px solid ${color}` }}>
-        <Heading size="md">{title}</Heading>
-        <Text>Han chot: {endTime}</Text>
-      </Box>
-    </Box>
-  );
-}
 
 const columns = [
   {
@@ -67,6 +50,7 @@ export default function Home() {
   const [dataSource] = useState(mockData.tableData);
   const [tagEvents] = useState(mockData.tagData);
   const [cardEvents] = useState(mockData.cardData);
+  const [reminders] = useState(mockData.reminders);
 
   return (
     <div>
@@ -114,10 +98,7 @@ export default function Home() {
         </Box>
         <Box p={3} rounded="md" shadow="md" borderWidth="1px">
           <AppCalendar caption="Lịch" />
-          <Box>Loi nhac</Box>
-          <NoteItem color="red" title="poster design" endTime="22/2/2022" />
-          <NoteItem color="green" title="poster design" endTime="33/2/2022" />
-          <NoteItem color="red" title="poster design" endTime="22/2/2022" />
+          <AppReminder caption="Lời nhắc" data={reminders} />
         </Box>
       </Box>
     </div>

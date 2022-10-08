@@ -1,7 +1,7 @@
 # This is App package
 
-- [ ] Redux store
-- [ ] App reducer
-- [ ] Logger middleware for Redux
-- [ ] Notification middleware for Redux
-- [ ] Icons loader
+- [x] Redux store
+- [x] App reducer
+- [x] Logger middleware for Redux
+- [x] Notification middleware for Redux
+- [x] Icons loader
