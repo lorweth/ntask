@@ -71,7 +71,7 @@ export default function Home() {
             <Link to="/">Xem tat ca</Link>
           </Box>
           <Heading p={2} size="lg">
-            Su kien
+            Sự kiện
           </Heading>
           <Box gap="4" sx={{ display: 'flex' }}>
             {cardEvents.map((cardEvent) => (
@@ -90,7 +90,7 @@ export default function Home() {
             <Link to="/">Xem tat ca</Link>
           </Box>
           <Heading p={2} size="lg">
-            Cong viec
+            Công việc
           </Heading>
           <Box>
             <AppTable hasHeader={false} caption="" dataSource={dataSource} columns={columns} />
