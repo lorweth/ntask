@@ -15,6 +15,7 @@ import {
   useColorModeValue,
   VStack,
   useColorMode,
+  theme,
 } from '@chakra-ui/react';
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -36,8 +37,7 @@ export default function AppHeader({ title, brandIcon, ...rest }) {
   const borderBottomColor = useColorModeValue('gray.200', 'gray.700');
   const currColorModeIcon = useColorModeValue(solid('sun'), solid('moon'));
   const adminColor = useColorModeValue('green.500', 'yellow.400');
-  const menuListBGColor = useColorModeValue('white', 'gray.900');
-  const menuListBorderColor = useColorModeValue('gray.200', 'gray.700');
+  const menuTextColor = useColorModeValue(theme.colors.black, theme.colors.white);
 
   const handleClickToggleSidebar = () => {
     dispatch(toggleSidebar());
@@ -107,7 +107,7 @@ export default function AppHeader({ title, brandIcon, ...rest }) {
               </Box>
             </HStack>
           </MenuButton>
-          <MenuList bg={menuListBGColor} borderColor={menuListBorderColor}>
+          <MenuList color={menuTextColor}>
             <MenuItem>Profile</MenuItem>
             <MenuItem>Settings</MenuItem>
             <MenuDivider />
