@@ -21,6 +21,7 @@ import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch } from 'react-redux';
 import { toggleSidebar } from 'app/appSlice';
+import { NavLink } from 'react-router-dom';
 
 const BrandIcon = chakra('img', {
   baseStyle: {
@@ -111,7 +112,9 @@ export default function AppHeader({ title, brandIcon, ...rest }) {
             <MenuItem>Profile</MenuItem>
             <MenuItem>Settings</MenuItem>
             <MenuDivider />
-            <MenuItem>Sign out</MenuItem>
+            <MenuItem as={NavLink} to="/auth/signout">
+              Sign out
+            </MenuItem>
           </MenuList>
         </Menu>
       </Box>

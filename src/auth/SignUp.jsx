@@ -1,13 +1,10 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import ValidatedInput from 'components/ValidatedInput';
-import ValidatedCheck from 'components/ValidatedCheck';
-import { useDispatch } from 'react-redux';
 import { Avatar, Box, Button, Flex, Image, Link, ScaleFade, Text } from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { regular } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { NavLink } from 'react-router-dom';
-import { signin } from './authSlice';
 
 const formRules = {
   email: {
@@ -23,19 +20,19 @@ const formRules = {
   },
 };
 
-export default function SignIn() {
-  const dispatch = useDispatch();
-
+export default function SignUp() {
   const { control, handleSubmit } = useForm({
     defaultValues: {
+      firstname: '',
+      lastname: '',
       username: '',
       password: '',
-      rememberMe: false,
     },
   });
 
   const onSubmit = (values) => {
-    dispatch(signin(values));
+    // eslint-disable-next-line no-console
+    console.log(values);
   };
 
   return (
@@ -70,16 +67,25 @@ export default function SignIn() {
               p: 4,
             }}
           >
-            <Flex fontSize="2xl" fontWeight="bold" mb={4} gap={2} alignItems="center">
-              <Avatar bg="teal.500" icon={<FontAwesomeIcon icon={regular('user')} />} />
-              <Text>Sign In</Text>
-            </Flex>
+            <Text fontSize="2xl" fontWeight="bold" mb={4}>
+              <Avatar
+                bg="teal.500"
+                color="whiteAlpha.900"
+                icon={<FontAwesomeIcon icon={regular('user')} />}
+              />
+              &nbsp;Sign Up
+            </Text>
+
             <Box
               as="form"
               noValidate
               sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '.5rem' }}
               onSubmit={handleSubmit(onSubmit)}
             >
+              <Flex gap={2}>
+                <ValidatedInput control={control} name="firstname" type="text" label="Firstname" />
+                <ValidatedInput control={control} name="lastname" type="text" label="Lastname" />
+              </Flex>
               <ValidatedInput
                 control={control}
                 name="username"
@@ -96,24 +102,16 @@ export default function SignIn() {
                 rules={formRules.password}
               />
 
-              <ValidatedCheck control={control} name="rememberMe" label="Remember me" />
+              {/* <ValidatedCheck control={control} name="rememberMe" label="Remember me" /> */}
 
-              <Button type="submit" width="100%">
-                Sign In
+              <Button type="submit" width="100%" mt={2}>
+                Sign Up
               </Button>
-              <Button
-                borderColor="green.500"
-                color="green.500"
-                type="submit"
-                width="100%"
-                variant="outline"
-              >
-                Forgot Password
-              </Button>
+
               <Text color="gray.500">
                 Already a member?{' '}
-                <Link as={NavLink} to="/auth/signup" fontWeight="bold" color="teal.400">
-                  Sign Up
+                <Link as={NavLink} to="/auth/signin" fontWeight="bold" color="teal.400">
+                  Log In
                 </Link>
               </Text>
             </Box>

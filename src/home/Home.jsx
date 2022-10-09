@@ -68,7 +68,9 @@ export default function Home() {
             ))}
           </Box>
           <Box sx={{ textAlign: 'right' }}>
-            <Link to="/">Xem tat ca</Link>
+            <Text as={Link} to="/">
+              Xem tất cả
+            </Text>
           </Box>
           <Heading p={2} size="lg">
             Sự kiện
@@ -87,7 +89,9 @@ export default function Home() {
             ))}
           </Box>
           <Box sx={{ textAlign: 'right' }}>
-            <Link to="/">Xem tat ca</Link>
+            <Text as={Link} to="/">
+              Xem tất cả
+            </Text>
           </Box>
           <Heading p={2} size="lg">
             Công việc
