@@ -67,7 +67,7 @@ export default function Home() {
               />
             ))}
           </Box>
-          <Box sx={{ textAlign: 'right' }}>
+          <Box sx={{ textAlign: 'right', mt: '.5rem' }}>
             <Text as={Link} to="/">
               Xem tất cả
             </Text>
@@ -88,7 +88,7 @@ export default function Home() {
               />
             ))}
           </Box>
-          <Box sx={{ textAlign: 'right' }}>
+          <Box sx={{ textAlign: 'right', mt: '.5rem' }}>
             <Text as={Link} to="/">
               Xem tất cả
             </Text>
@@ -100,7 +100,7 @@ export default function Home() {
             <AppTable hasHeader={false} caption="" dataSource={dataSource} columns={columns} />
           </Box>
         </Box>
-        <Box p={3} rounded="md" shadow="md" borderWidth="1px">
+        <Box p={3} rounded="md" shadow="md" borderWidth="1px" maxW='320px'>
           <AppCalendar caption="Lịch" />
           <AppReminder caption="Lời nhắc" data={reminders} />
         </Box>

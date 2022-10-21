@@ -8,6 +8,7 @@ import reportWebVitals from 'reportWebVitals';
 import 'index.css';
 import ToastContainer from 'common/toastify';
 import loadIcon from 'app/icon-loader';
+import { MantineProvider } from '@mantine/core';
 
 loadIcon();
 
@@ -18,10 +19,12 @@ const root = createRoot(container);
 
 root.render(
   <StoreProvider store={store}>
-    <ChakraProvider>
-      <App />
-      <ToastContainer />
-    </ChakraProvider>
+    <MantineProvider withGlobalStyles withNormalizeCSS>
+      <ChakraProvider>
+        <App />
+        <ToastContainer />
+      </ChakraProvider>
+    </MantineProvider>
   </StoreProvider>
 );
 

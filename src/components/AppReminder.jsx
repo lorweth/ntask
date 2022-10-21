@@ -25,6 +25,7 @@ export default function AppReminder({ caption, data }) {
       <Heading size="md">{caption}</Heading>
       <Box
         sx={{
+          mt: 3,
           maxHeight: '20rem',
           overflowY: 'auto',
         }}
