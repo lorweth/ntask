@@ -14,14 +14,24 @@ const StyledContainer = chakra('div', {
 
 const sidebarItems = [
   {
-    title: 'Home',
+    title: 'Trang chủ',
     icon: 'home',
     path: '/',
   },
   {
-    title: 'Counter',
-    icon: 'calculator',
-    path: '/counter',
+    title: 'Sự kiện',
+    icon: 'calendar',
+    path: '/events',
+  },
+  {
+    title: 'Công việc',
+    icon: 'list-check',
+    path: '/tasks',
+  },
+  {
+    title: 'Bản sao',
+    icon: 'copy',
+    path: '/backups',
   },
 ];
 
@@ -39,7 +49,8 @@ export default function App() {
   const Home = withSuspense(React.lazy(() => import('home')));
   const Counter = withSuspense(React.lazy(() => import('counter')));
   const Auth = withSuspense(React.lazy(() => import('auth')));
-  const EventComponent = withSuspense(React.lazy(() => import('drapdrop')));
+  const DragDrop = withSuspense(React.lazy(() => import('drapdrop')));
+  const EventMgmt = withSuspense(React.lazy(() => import('event-mgmt')));
 
   return (
     <StyledContainer>
@@ -51,7 +62,8 @@ export default function App() {
             <Routes>
               <Route index element={<Home username="Vae" />} />
               <Route path="/home" element={<Home username="Vae" />} />
-              <Route path="/events" element={<EventComponent />} />
+              <Route path="/drapdrop" element={<DragDrop />} />
+              <Route path="/events" element={<EventMgmt />} />
               <Route path="/counter" element={<Counter />} />
               <Route path="/auth/*" element={<Auth />} />
             </Routes>

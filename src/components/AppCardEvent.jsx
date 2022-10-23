@@ -1,10 +1,12 @@
 import React from 'react';
-import { Badge, Box, Heading, Image, Text, theme } from '@chakra-ui/react';
+import { Badge, Box, Heading, Image, Text, theme, useColorModeValue } from '@chakra-ui/react';
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
 
 export default function AppCardEvent({ linkImage, title, status, time, location, linkDetail }) {
+  const linkTextColor = useColorModeValue(theme.colors.gray[600], theme.colors.gray[400]);
+
   return (
     <Box
       sx={{
@@ -36,7 +38,7 @@ export default function AppCardEvent({ linkImage, title, status, time, location,
         </Box>
         {linkDetail && (
           <Box sx={{ textAlign: 'right' }}>
-            <Text as={Link} color={theme.colors.blackAlpha[700]} fontSize="sm" to={linkDetail}>
+            <Text as={Link} color={linkTextColor} fontSize="sm" to={linkDetail}>
               Xem chi tiết
             </Text>
           </Box>
