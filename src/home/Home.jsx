@@ -100,7 +100,7 @@ export default function Home() {
             <AppTable hasHeader={false} caption="" dataSource={dataSource} columns={columns} />
           </Box>
         </Box>
-        <Box p={3} rounded="md" shadow="md" borderWidth="1px" maxW='320px'>
+        <Box p={3} rounded="md" shadow="md" borderWidth="1px" maxW="320px">
           <AppCalendar caption="Lịch" />
           <AppReminder caption="Lời nhắc" data={reminders} />
         </Box>
