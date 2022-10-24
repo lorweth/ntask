@@ -2,43 +2,40 @@ import { React } from 'react';
 import {
   Button,
   Modal,
-  ModalBody,
-  ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
   ModalOverlay,
+  Text,
 } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
+import useAuth from './useAuth';
 
 export default function SignOut() {
-  const navigate = useNavigate();
+  const navigator = useNavigate();
+  const { removeAuthToken } = useAuth();
 
-  const onClose = () => navigate(-1);
+  const onClose = () => navigator(-1);
 
   const onSignOut = () => {
-    // eslint-disable-next-line no-console
-    console.log('Sign out');
+    removeAuthToken();
+    navigator('/auth/signin');
   };
 
   return (
-    <Modal isOpen="true" onClose={onClose}>
+    <Modal blockScrollOnMount={false} isOpen onClose={onClose}>
       <ModalOverlay />
       <ModalContent>
-        <ModalHeader bg="red.400" color="whiteAlpha.900">
-          Sign Out Account
+        <ModalHeader>
+          <Text fontWeight="bold">Are you sure you want to sign out?</Text>
         </ModalHeader>
-        <ModalCloseButton />
-        <ModalBody borderBottom="1px" borderColor="gray.400">
-          Do you want to sign out?
-        </ModalBody>
 
         <ModalFooter>
-          <Button variant="ghost" colorScheme="blue" mr={3} onClick={onClose}>
-            Close
-          </Button>
-          <Button colorScheme="red" onClick={onSignOut}>
+          <Button colorScheme="red" mr={3} onClick={onSignOut}>
             Sign out
+          </Button>
+          <Button variant="ghost" onClick={onClose}>
+            Cancel
           </Button>
         </ModalFooter>
       </ModalContent>

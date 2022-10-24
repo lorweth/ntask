@@ -10,16 +10,11 @@ import { NavLink } from 'react-router-dom';
 import { signin } from './authSlice';
 
 const formRules = {
-  email: {
-    required: 'Email is required',
-    pattern: {
-      value:
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-      message: 'Please enter a valid email',
-    },
+  username: {
+    required: 'Username cannot be blank',
   },
   password: {
-    required: 'Password is required',
+    required: 'Password cannot be blank',
   },
 };
 
@@ -71,8 +66,12 @@ export default function SignIn() {
             }}
           >
             <Flex fontSize="2xl" fontWeight="bold" mb={4} gap={2} alignItems="center">
-              <Avatar bg="teal.500" icon={<FontAwesomeIcon icon={regular('user')} />} />
-              <Text>Sign In</Text>
+              <Avatar
+                bg="teal.500"
+                color="white"
+                icon={<FontAwesomeIcon icon={regular('user')} />}
+              />
+              <Text>Login</Text>
             </Flex>
             <Box
               as="form"
@@ -83,9 +82,9 @@ export default function SignIn() {
               <ValidatedInput
                 control={control}
                 name="username"
-                type="email"
-                label="Email"
-                rules={formRules.email}
+                type="text"
+                label="Username"
+                rules={formRules.username}
               />
 
               <ValidatedInput
@@ -99,7 +98,7 @@ export default function SignIn() {
               <ValidatedCheck control={control} name="rememberMe" label="Remember me" />
 
               <Button type="submit" width="100%">
-                Sign In
+                Submit
               </Button>
               <Button
                 borderColor="green.500"
@@ -108,12 +107,12 @@ export default function SignIn() {
                 width="100%"
                 variant="outline"
               >
-                Forgot Password
+                Forgot your password
               </Button>
               <Text color="gray.500">
-                Already a member?{' '}
+                Don&apos;t have an account?&nbsp;
                 <Link as={NavLink} to="/auth/signup" fontWeight="bold" color="teal.400">
-                  Sign Up
+                  Create an account
                 </Link>
               </Text>
             </Box>
