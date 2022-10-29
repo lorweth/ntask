@@ -1,27 +1,26 @@
 import React from 'react';
 import {
-  Avatar,
   Box,
   Button,
   chakra,
   Heading,
-  Text,
-  HStack,
+  useColorModeValue,
+  useColorMode,
   Menu,
   MenuButton,
-  MenuDivider,
-  MenuItem,
-  MenuList,
-  useColorModeValue,
+  HStack,
+  Avatar,
   VStack,
-  useColorMode,
-  theme,
+  Text,
+  MenuList,
+  MenuItem,
+  MenuDivider,
 } from '@chakra-ui/react';
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch } from 'react-redux';
 import { toggleSidebar } from 'app/appSlice';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 
 const BrandIcon = chakra('img', {
   baseStyle: {
@@ -30,15 +29,43 @@ const BrandIcon = chakra('img', {
   },
 });
 
-export default function AppHeader({ title, brandIcon, ...rest }) {
+export function AppHeaderUser({
+  username = 'anonymous',
+  role = 'anonymous',
+  avatarLink = 'https://i.pravatar.cc/300',
+}) {
+  return (
+    <HStack>
+      <Avatar size="sm" src={avatarLink} />
+      <VStack display={{ base: 'none', md: 'flex' }} alignItems="flex-start" spacing="1px" ml="2">
+        <Text fontSize="sm">{username}</Text>
+        <Text fontSize="xs" color={useColorModeValue('green.500', 'yellow.500')}>
+          {role}
+        </Text>
+      </VStack>
+      <Box display={{ base: 'none', md: 'flex' }}>
+        <FontAwesomeIcon icon={solid('caret-down')} />
+      </Box>
+    </HStack>
+  );
+}
+
+export function AppMenuItem({ text, link }) {
+  return (
+    <MenuItem as={NavLink} to={link}>
+      {text}
+    </MenuItem>
+  );
+}
+
+export default function AppHeader({ title, brandIcon, sx, children }) {
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const { toggleColorMode } = useColorMode();
 
   const borderBottomColor = useColorModeValue('gray.200', 'gray.700');
   const currColorModeIcon = useColorModeValue(solid('sun'), solid('moon'));
-  const adminColor = useColorModeValue('green.500', 'yellow.400');
-  const menuTextColor = useColorModeValue(theme.colors.black, theme.colors.white);
 
   const handleClickToggleSidebar = () => {
     dispatch(toggleSidebar());
@@ -58,8 +85,7 @@ export default function AppHeader({ title, brandIcon, ...rest }) {
       py={2}
       h={20}
       ml={{ base: 0, md: 20, lg: 20 }}
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      {...rest}
+      sx={sx}
     >
       <Box
         as="div"
@@ -87,32 +113,17 @@ export default function AppHeader({ title, brandIcon, ...rest }) {
         </Box>
         <Menu>
           <MenuButton type="button" py={2} transition="all 0.3s" _focus={{ boxShadow: 'none' }}>
-            <HStack>
-              <Avatar
-                size="sm"
-                src="https://i.pinimg.com/564x/08/33/7b/08337b0f3707529f5b20fc3691ce0437.jpg"
-              />
-              <VStack
-                display={{ base: 'none', md: 'flex' }}
-                alignItems="flex-start"
-                spacing="1px"
-                ml="2"
-              >
-                <Text fontSize="sm">Virsavik</Text>
-                <Text fontSize="xs" color={adminColor}>
-                  Admin
-                </Text>
-              </VStack>
-              <Box display={{ base: 'none', md: 'flex' }}>
-                <FontAwesomeIcon icon={solid('caret-down')} />
-              </Box>
-            </HStack>
+            {children}
           </MenuButton>
-          <MenuList color={menuTextColor}>
-            <MenuItem>Profile</MenuItem>
-            <MenuItem>Settings</MenuItem>
+          <MenuList color={useColorModeValue('black', 'white')}>
+            <MenuItem as={NavLink} to="/auth/profile">
+              Profile
+            </MenuItem>
+            <MenuItem as={NavLink} to="/auth/setting">
+              Settings
+            </MenuItem>
             <MenuDivider />
-            <MenuItem as={NavLink} to="/auth/signout">
+            <MenuItem as={NavLink} state={{ backgroundLocation: location }} to="/auth/signout">
               Sign out
             </MenuItem>
           </MenuList>
