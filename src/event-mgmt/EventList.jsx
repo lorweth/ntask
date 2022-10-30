@@ -7,20 +7,19 @@ import { EventStatuses } from './utils';
 
 export default function EventList({ title, dropgableID, eventStatus }) {
   const [events, setEvents] = useState([]);
-
-  const { loading, incomingEvents, inprogressEvents, finishedEvents } = useSelector(
+  const { loading, createdEvents, inprogressEvents, doneEvents } = useSelector(
     (state) => state.eventMgmt
   );
 
   useEffect(() => {
-    if (eventStatus === EventStatuses.INCOMING) {
-      setEvents(incomingEvents);
+    if (eventStatus === EventStatuses.CREATED) {
+      setEvents(createdEvents);
     } else if (eventStatus === EventStatuses.IN_PROGRESS) {
       setEvents(inprogressEvents);
-    } else if (eventStatus === EventStatuses.FINISHED) {
-      setEvents(finishedEvents);
+    } else if (eventStatus === EventStatuses.DONE) {
+      setEvents(doneEvents);
     }
-  }, [incomingEvents, inprogressEvents, finishedEvents, eventStatus]);
+  }, [createdEvents, inprogressEvents, doneEvents, eventStatus]);
 
   return (
     <Box
@@ -32,10 +31,10 @@ export default function EventList({ title, dropgableID, eventStatus }) {
       }}
     >
       <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Text fontSize="xl" fontWeight="500" color="blackAlpha.700">
+        <Text fontSize="xl" fontWeight="500">
           {title}
         </Text>
-        <Text>{events.length}</Text>
+        <Text>{events?.length || 0}</Text>
       </Box>
       <Droppable droppableId={dropgableID}>
         {(provided, snapshot) => (
@@ -45,31 +44,32 @@ export default function EventList({ title, dropgableID, eventStatus }) {
             bgColor={snapshot.isDraggingOver && theme.colors.gray[500]}
           >
             {loading && <Progress size="xs" isIndeterminate />}
-            {events.map((event, index) => (
-              <Draggable draggableId={`draggable_${event.id}`} index={index} key={event.id}>
-                {(providedDrag, snapshotDrag) => (
-                  <Box
-                    as="div"
-                    ref={providedDrag.innerRef}
-                    // eslint-disable-next-line react/jsx-props-no-spreading
-                    {...providedDrag.draggableProps}
-                    // eslint-disable-next-line react/jsx-props-no-spreading
-                    {...providedDrag.dragHandleProps}
-                    bgColor={snapshotDrag.isDragging && theme.colors.gray[500]}
-                  >
-                    <EventCard
-                      name={event.name}
-                      imageURL={event.description}
-                      location="UIT"
-                      startAt={event.start_at}
-                      endAt={event.end_at}
-                      tags={event.tags}
-                      members={event.members}
-                    />
-                  </Box>
-                )}
-              </Draggable>
-            ))}
+            {events &&
+              events.map((event, index) => (
+                <Draggable draggableId={`draggable_${event.id}`} index={index} key={event.id}>
+                  {(providedDrag, snapshotDrag) => (
+                    <Box
+                      as="div"
+                      ref={providedDrag.innerRef}
+                      // eslint-disable-next-line react/jsx-props-no-spreading
+                      {...providedDrag.draggableProps}
+                      // eslint-disable-next-line react/jsx-props-no-spreading
+                      {...providedDrag.dragHandleProps}
+                      bgColor={snapshotDrag.isDragging && theme.colors.gray[500]}
+                    >
+                      <EventCard
+                        eventID={event.id}
+                        name={event.name}
+                        imageURL={event.description}
+                        startAt={event.startAt}
+                        endAt={event.endAt}
+                        tags={event.tags}
+                        members={event.members}
+                      />
+                    </Box>
+                  )}
+                </Draggable>
+              ))}
           </Box>
         )}
       </Droppable>

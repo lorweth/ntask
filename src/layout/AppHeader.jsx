@@ -119,9 +119,6 @@ export default function AppHeader({ title, brandIcon, sx, children }) {
             <MenuItem as={NavLink} state={{ backgroundLocation: location }} to="/auth/profile">
               Profile
             </MenuItem>
-            <MenuItem as={NavLink} to="/auth/setting">
-              Settings
-            </MenuItem>
             <MenuDivider />
             <MenuItem as={NavLink} state={{ backgroundLocation: location }} to="/auth/signout">
               Sign out

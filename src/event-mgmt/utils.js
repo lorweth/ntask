@@ -1,13 +1,13 @@
 export const EventStatuses = {
-  INCOMING: 0,
-  IN_PROGRESS: 1,
-  FINISHED: 2,
+  CREATED: 'CREATED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  DONE: 'DONE',
 };
 
 // EventStatusLabels is used to handle onDragEnd event
 // must have the same name as state
 export const EventStatusLabels = {
-  [EventStatuses.INCOMING]: 'incomingEvents',
+  [EventStatuses.CREATED]: 'createdEvents',
   [EventStatuses.IN_PROGRESS]: 'inprogressEvents',
-  [EventStatuses.FINISHED]: 'finishedEvents',
+  [EventStatuses.DONE]: 'doneEvents',
 };

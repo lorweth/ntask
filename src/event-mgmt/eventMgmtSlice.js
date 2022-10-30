@@ -1,11 +1,14 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { getMockEvents } from './mock-data';
+import StorageAPI from 'common/storageAPI';
 import { EventStatuses } from './utils';
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 const initialState = {
-  incomingEvents: [],
+  createdEvents: [],
   inprogressEvents: [],
-  finishedEvents: [],
+  doneEvents: [],
+  users: [],
   selectedEvent: null,
   loading: false,
   updateSuccess: null,
@@ -33,10 +36,88 @@ const updateOrder = (list, startIndex, endIndex) => {
 //     return result;
 // };
 
-export const getEventsForTest = createAsyncThunk('eventsMgmt/getEvents', async () => {
-  const response = await getMockEvents();
-  return response.data;
-});
+/**
+ * Fetches all events from the server
+ * @param {Object} pagination - pagination information
+ * @param {number} pagination.page - page number default 0
+ * @param {number} pagination.size - page size default 30
+ *
+ * @return {Promise} Promise object represents the events
+ */
+export const fetchEvents = createAsyncThunk(
+  'eventsMgmt/fetchEvents',
+  async ({ page = 0, size = 30 }) =>
+    fetch(`${API_URL}/events?${new URLSearchParams({ page, size })}`, {
+      method: 'GET',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${
+          StorageAPI.local.get('authToken') || StorageAPI.local.get('authToken')
+        }`,
+      },
+    }).then((res) => res.json())
+);
+
+export const createEvent = createAsyncThunk(
+  'eventsMgmt/createEvent',
+  async ({ name, description, startAt, endAt }) =>
+    fetch(`${API_URL}/events`, {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${
+          StorageAPI.local.get('authToken') || StorageAPI.local.get('authToken')
+        }`,
+      },
+      body: JSON.stringify({ name, description, startAt, endAt }),
+    }).then((res) => res.json())
+);
+
+export const updateEvent = createAsyncThunk(
+  'eventsMgmt/updateEvent',
+  async ({ eventID, name, description, startAt, endAt, status, members }) =>
+    fetch(`${API_URL}/events/${eventID}`, {
+      method: 'PATCH',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${
+          StorageAPI.local.get('authToken') || StorageAPI.local.get('authToken')
+        }`,
+      },
+      body: JSON.stringify({ id: eventID, name, description, startAt, endAt, status, members }),
+    }).then((res) => res.json())
+);
+
+export const getEvent = createAsyncThunk('eventsMgmt/getEvent', async (eventId) =>
+  fetch(`${API_URL}/events/${eventId}`, {
+    method: 'GET',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${
+        StorageAPI.local.get('authToken') || StorageAPI.local.get('authToken')
+      }`,
+    },
+  }).then((res) => res.json())
+);
+
+export const fetchUsers = createAsyncThunk(
+  'eventsMgmt/fetchUsers',
+  async ({ q, page = 0, size = 30 }) =>
+    fetch(`${API_URL}/users?${new URLSearchParams({ q, page, size })}`, {
+      method: 'GET',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${
+          StorageAPI.local.get('authToken') || StorageAPI.local.get('authToken')
+        }`,
+      },
+    }).then((res) => res.json())
+);
 
 const eventMgmtSlice = createSlice({
   name: 'eventsMgmt',
@@ -53,21 +134,57 @@ const eventMgmtSlice = createSlice({
   },
   extraReducers(builder) {
     builder
-      .addCase(getEventsForTest.fulfilled, (state, action) => {
-        const eventList = action.payload;
-        state.incomingEvents = eventList.filter((event) => event.status === EventStatuses.INCOMING);
+      .addCase(fetchEvents.fulfilled, (state, action) => {
+        const eventList = action.payload.content;
+        state.createdEvents = eventList.filter((event) => event.status === EventStatuses.CREATED);
         state.inprogressEvents = eventList.filter(
           (event) => event.status === EventStatuses.IN_PROGRESS
         );
-        state.finishedEvents = eventList.filter((event) => event.status === EventStatuses.FINISHED);
+        state.doneEvents = eventList.filter((event) => event.status === EventStatuses.DONE);
         state.loading = false;
+        state.updateSuccess = null;
       })
-      .addCase(getEventsForTest.pending, (state) => {
+      .addCase(fetchEvents.pending, (state) => {
         state.loading = true;
       })
-      .addCase(getEventsForTest.rejected, (state, action) => {
+      .addCase(fetchEvents.rejected, (state, action) => {
         state.errMsg = action.error.message || 'Something went wrong';
         state.loading = false;
+      })
+      .addCase(createEvent.fulfilled, (state) => {
+        state.loading = false;
+        state.updateSuccess = true;
+      })
+      .addCase(createEvent.pending, (state) => {
+        state.loading = true;
+        state.updateSuccess = null;
+      })
+      .addCase(createEvent.rejected, (state, action) => {
+        state.loading = false;
+        state.errMsg = action.error.message || 'Something went wrong';
+      })
+      .addCase(getEvent.fulfilled, (state, action) => {
+        state.loading = false;
+        state.selectedEvent = action.payload;
+      })
+      .addCase(getEvent.pending, (state) => {
+        state.loading = true;
+        state.selectedEvent = null;
+      })
+      .addCase(getEvent.rejected, (state, action) => {
+        state.loading = false;
+        state.errMsg = action.error.message || 'Something went wrong';
+      })
+      .addCase(fetchUsers.fulfilled, (state, action) => {
+        state.loading = false;
+        state.users = action.payload.content;
+      })
+      .addCase(fetchUsers.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchUsers.rejected, (state, action) => {
+        state.loading = false;
+        state.errMsg = action.error.message || 'Something went wrong';
       });
   },
 });
