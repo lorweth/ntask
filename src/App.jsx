@@ -24,7 +24,6 @@ const Counter = withSuspense(React.lazy(() => import('counter')));
 const Auth = withSuspense(React.lazy(() => import('auth')));
 const DragDrop = withSuspense(React.lazy(() => import('drapdrop')));
 const EventMgmt = withSuspense(React.lazy(() => import('event-mgmt')));
-
 const StyledContainer = chakra('div', {
   baseStyle: {
     minHeight: '100vh',

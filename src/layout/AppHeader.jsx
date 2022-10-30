@@ -116,7 +116,7 @@ export default function AppHeader({ title, brandIcon, sx, children }) {
             {children}
           </MenuButton>
           <MenuList color={useColorModeValue('black', 'white')}>
-            <MenuItem as={NavLink} to="/auth/profile">
+            <MenuItem as={NavLink} state={{ backgroundLocation: location }} to="/auth/profile">
               Profile
             </MenuItem>
             <MenuItem as={NavLink} to="/auth/setting">

@@ -7,6 +7,7 @@ const API_URL = process.env.REACT_APP_API_URL;
 const initialState = {
   loading: false,
   userData: null,
+  updateSuccess: null,
   loginSuccess: null,
   errorMessage: null,
 };
@@ -95,7 +96,23 @@ export const signup = createAsyncThunk('auth/signUp', async ({ login, name, emai
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ login, name, email, password }),
-  })
+  }).then((resp) => resp.json())
+);
+
+export const updateProfile = createAsyncThunk(
+  'profile/updateProfile',
+  async ({ id, login, name, email, bio, avatarUrl, roles }) =>
+    fetch(`${API_URL}/admin/users`, {
+      method: 'PUT',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${
+          StorageAPI.local.get('authToken') || StorageAPI.session.get('authToken')
+        }`,
+      },
+      body: JSON.stringify({ id, login, name, email, bio, avatarUrl, roles }),
+    })
 );
 
 // Authentication slice
@@ -123,7 +140,8 @@ const authSlice = createSlice({
       .addCase(getUserData.fulfilled, (state, action) => {
         state.loading = false;
         state.userData = action.payload;
-        state.loginSuccess = true;
+        state.loginSuccess = null;
+        state.updateSuccess = null;
         state.errorMessage = null;
       })
       .addCase(getUserData.pending, (state) => {
@@ -145,6 +163,19 @@ const authSlice = createSlice({
       })
       .addCase(signup.rejected, (state, action) => {
         state.loading = false;
+        state.errorMessage = action.error.message || 'Something went wrong';
+      })
+      .addCase(updateProfile.fulfilled, (state) => {
+        state.loading = false;
+        state.updateSuccess = true;
+      })
+      .addCase(updateProfile.pending, (state) => {
+        state.loading = true;
+        state.updateSuccess = null;
+      })
+      .addCase(updateProfile.rejected, (state, action) => {
+        state.loading = false;
+        state.updateSuccess = false;
         state.errorMessage = action.error.message || 'Something went wrong';
       });
   },
