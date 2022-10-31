@@ -32,7 +32,7 @@ export default function UpdateEvent() {
   const location = useLocation();
   const navigator = useNavigate();
   const { selectedEvent, users } = useSelector((state) => state.eventMgmt);
-  const { control, handleSubmit, setValue } = useForm({
+  const { control, handleSubmit, watch, setValue } = useForm({
     defaultValues: {
       name: '',
       description: '',
@@ -41,9 +41,10 @@ export default function UpdateEvent() {
       status: '',
     },
   });
-  const [members, setMembers] = useState([]);
-
+  const startAtRef = useRef({});
+  startAtRef.current = watch('startAt', '');
   const userEmailRef = useRef({});
+  const [members, setMembers] = useState([]);
 
   const formRules = {
     name: {
@@ -57,6 +58,9 @@ export default function UpdateEvent() {
     },
     endAt: {
       required: 'End time is required',
+      validate: (value) =>
+        dayjs(value).isAfter(dayjs(startAtRef.current.value)) ||
+        'End time must be after start time',
     },
     status: {
       required: 'Status is required',
@@ -94,7 +98,7 @@ export default function UpdateEvent() {
   };
 
   const onFindUser = () => {
-    dispatch(fetchUsers({ q: userEmailRef.current.value, page: 0, size: 30 }));
+    dispatch(fetchUsers({ q: userEmailRef.current.value, page: 0, size: 6 }));
   };
 
   const onClose = () => {

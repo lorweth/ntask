@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   Avatar,
   Box,
@@ -15,7 +15,7 @@ import { regular } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ValidatedInput from 'components/ValidatedInput';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { useDispatch } from 'react-redux';
 import { createEvent } from './eventMgmtSlice';
@@ -23,14 +23,17 @@ import { createEvent } from './eventMgmtSlice';
 export default function UpdateEvent() {
   const dispatch = useDispatch();
   const navigator = useNavigate();
-  const { control, handleSubmit } = useForm({
+  const location = useLocation();
+  const { control, handleSubmit, watch } = useForm({
     defaultValues: {
       name: '',
       description: '',
-      startAt: '',
-      endAt: '',
+      startAt: dayjs().format('YYYY-MM-DDTHH:mm'),
+      endAt: dayjs().format('YYYY-MM-DDTHH:mm'),
     },
   });
+  const startAtRef = useRef({});
+  startAtRef.current = watch('startAt', '');
 
   const formRules = {
     name: {
@@ -44,6 +47,9 @@ export default function UpdateEvent() {
     },
     endAt: {
       required: 'End time is required',
+      validate: (value) =>
+        dayjs(value).isAfter(dayjs(startAtRef.current.value)) ||
+        'End time must be after start time',
     },
   };
 
@@ -55,7 +61,7 @@ export default function UpdateEvent() {
   };
 
   const onClose = () => {
-    navigator(-1);
+    navigator(location.state?.backgroundLocation?.pathname || -1);
   };
 
   return (

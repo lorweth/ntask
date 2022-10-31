@@ -1,6 +1,15 @@
 import React from 'react';
-import { FormControl, FormErrorMessage, FormLabel, Input } from '@chakra-ui/react';
+import { FormControl, FormErrorMessage, FormLabel, Input, Textarea } from '@chakra-ui/react';
 import { Controller } from 'react-hook-form';
+
+function InputComponent({ type, onChange, onBlur, value, innerRef }) {
+  switch (type) {
+    case 'textarea':
+      return <Textarea onChange={onChange} onBlur={onBlur} value={value} ref={innerRef} />;
+    default:
+      return <Input type={type} onChange={onChange} onBlur={onBlur} value={value} ref={innerRef} />;
+  }
+}
 
 /**
  * ValidatedInput is a wrapper around Input that adds validation
@@ -23,7 +32,13 @@ export default function ValidatedInput({ control, name, type, label, rules }) {
       render={({ field: { onChange, onBlur, value, ref }, fieldState: { error } }) => (
         <FormControl isInvalid={!!error}>
           <FormLabel>{label}</FormLabel>
-          <Input type={type} onChange={onChange} onBlur={onBlur} value={value} ref={ref} />
+          <InputComponent
+            type={type}
+            onChange={onChange}
+            onBlur={onBlur}
+            value={value}
+            innerRef={ref}
+          />
           {error && <FormErrorMessage>{error?.message}</FormErrorMessage>}
         </FormControl>
       )}
