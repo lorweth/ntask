@@ -9,7 +9,8 @@ import EventList from './EventList';
 import { EventStatuses, EventStatusLabels } from './utils';
 import { fetchEvents, reorder } from './eventMgmtSlice';
 import CreateEvent from './CreateEvent';
-import UpdateEvent from './UpdateEvent';
+import EventDetail from './EventDetail';
+import EditTask from './EditTask';
 
 function EventMgmt() {
   const dispatch = useDispatch();
@@ -126,11 +127,13 @@ export default function EventMgmtPage() {
     <>
       <Routes location={location.state?.backgroundLocation || location}>
         <Route path="/" element={<EventMgmt />} />
+        <Route path="/:eventID" element={<EventDetail />} />
       </Routes>
       {location.state?.backgroundLocation && (
         <Routes>
           <Route path="/new" element={<CreateEvent />} />
-          <Route path="/:eventID" element={<UpdateEvent />} />
+          <Route path="/:eventID/tasks/new" element={<EditTask />} />
+          <Route path="/:eventID/tasks/:taskID" element={<EditTask />} />
         </Routes>
       )}
     </>

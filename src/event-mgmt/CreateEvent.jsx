@@ -11,7 +11,7 @@ import {
   ModalOverlay,
   Text,
 } from '@chakra-ui/react';
-import { regular } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { regular, solid } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ValidatedInput from 'components/ValidatedInput';
 import { useForm } from 'react-hook-form';
@@ -20,7 +20,7 @@ import dayjs from 'dayjs';
 import { useDispatch } from 'react-redux';
 import { createEvent } from './eventMgmtSlice';
 
-export default function UpdateEvent() {
+export default function CreateEvent() {
   const dispatch = useDispatch();
   const navigator = useNavigate();
   const location = useLocation();
@@ -76,7 +76,7 @@ export default function UpdateEvent() {
               color="whiteAlpha.900"
               icon={<FontAwesomeIcon icon={regular('calendar-days')} />}
             />
-            &nbsp;Create new event
+            &nbsp;Tạo sự kiện mới
           </Text>
         </ModalHeader>
         <ModalBody>
@@ -96,7 +96,7 @@ export default function UpdateEvent() {
               control={control}
               name="name"
               type="text"
-              label="Event name"
+              label="Tên sự kiện"
               rules={formRules.name}
             />
 
@@ -104,7 +104,7 @@ export default function UpdateEvent() {
               control={control}
               name="description"
               type="textarea"
-              label="Description"
+              label="Mô tả"
               rules={formRules.description}
             />
 
@@ -112,7 +112,7 @@ export default function UpdateEvent() {
               control={control}
               name="startAt"
               type="datetime-local"
-              label="Start time"
+              label="Bắt đầu"
               rules={formRules.startAt}
             />
 
@@ -120,12 +120,13 @@ export default function UpdateEvent() {
               control={control}
               name="endAt"
               type="datetime-local"
-              label="End time"
+              label="Kết thúc"
               rules={formRules.endAt}
             />
 
             <Button type="submit" width="100%" mt={2}>
-              Submit
+              <FontAwesomeIcon icon={solid('floppy-disk')} />
+              &nbsp;Lưu
             </Button>
           </Box>
         </ModalBody>

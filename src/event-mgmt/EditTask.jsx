@@ -6,7 +6,6 @@ import {
   FormControl,
   FormErrorMessage,
   FormLabel,
-  Input,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -16,35 +15,35 @@ import {
   Select,
   Text,
 } from '@chakra-ui/react';
-import { regular } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { regular, solid } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ValidatedInput from 'components/ValidatedInput';
 import { Controller, useForm } from 'react-hook-form';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchUsers, getEvent, updateEvent } from './eventMgmtSlice';
+import { createTask, getTask, updateTask } from './eventMgmtSlice';
 import { EventStatuses } from './utils';
 
-export default function UpdateEvent() {
-  const { eventID } = useParams();
+export default function EditTask() {
+  const { eventID, taskID } = useParams();
+  const isNew = taskID === undefined || taskID === null;
   const dispatch = useDispatch();
   const location = useLocation();
   const navigator = useNavigate();
-  const { selectedEvent, users } = useSelector((state) => state.eventMgmt);
+  const { selectedTask, selectedEvent } = useSelector((state) => state.eventMgmt);
   const { control, handleSubmit, watch, setValue } = useForm({
     defaultValues: {
       name: '',
       description: '',
-      startAt: '',
-      endAt: '',
-      status: '',
+      startAt: dayjs().format('YYYY-MM-DDTHH:mm'),
+      endAt: dayjs().add(1, 'hour').format('YYYY-MM-DDTHH:mm'),
+      status: EventStatuses.CREATED,
     },
   });
   const startAtRef = useRef({});
   startAtRef.current = watch('startAt', '');
-  const userEmailRef = useRef({});
-  const [members, setMembers] = useState([]);
+  const [assignees, setAssignees] = useState([]);
 
   const formRules = {
     name: {
@@ -68,37 +67,41 @@ export default function UpdateEvent() {
   };
 
   useEffect(() => {
-    dispatch(getEvent(eventID));
+    if (!isNew) {
+      dispatch(getTask(taskID));
+    }
   }, []);
 
   useEffect(() => {
-    if (selectedEvent) {
-      setValue('name', selectedEvent.name);
-      setValue('description', selectedEvent.description);
-      setValue('startAt', dayjs(selectedEvent.startAt).format('YYYY-MM-DDTHH:mm'));
-      setValue('endAt', dayjs(selectedEvent.endAt).format('YYYY-MM-DDTHH:mm'));
-      setValue('status', selectedEvent.status);
-      setMembers(selectedEvent.members);
+    if (!isNew && selectedTask) {
+      setValue('name', selectedTask.name);
+      setValue('description', selectedTask.description);
+      setValue('startAt', dayjs(selectedTask.startAt).format('YYYY-MM-DDTHH:mm'));
+      setValue('endAt', dayjs(selectedTask.endAt).format('YYYY-MM-DDTHH:mm'));
+      setValue('status', selectedTask.status);
+      setAssignees(selectedTask.assignees);
     }
-  }, [selectedEvent]);
+  }, [selectedTask]);
 
   const onSubmit = (values) => {
     const startAt = dayjs(values.startAt).format('YYYY-MM-DDTHH:mm:ssZ');
     const endAt = dayjs(values.endAt).format('YYYY-MM-DDTHH:mm:ssZ');
 
-    dispatch(updateEvent({ ...values, eventID, startAt, endAt, members }));
+    if (isNew) {
+      dispatch(createTask({ ...values, event: eventID, startAt, endAt, assignees }));
+    } else {
+      dispatch(updateTask({ ...values, id: taskID, event: eventID, startAt, endAt, assignees }));
+    }
   };
 
   const onAddMember = (member) => {
-    setMembers([...members, member]);
+    if (!assignees.find((a) => a.id === member.id)) {
+      setAssignees([...assignees, member]);
+    }
   };
 
   const onRemoveMember = (member) => {
-    setMembers(members.filter((m) => m.id !== member.id));
-  };
-
-  const onFindUser = () => {
-    dispatch(fetchUsers({ q: userEmailRef.current.value, page: 0, size: 6 }));
+    setAssignees(assignees.filter((m) => m.id !== member.id));
   };
 
   const onClose = () => {
@@ -121,19 +124,20 @@ export default function UpdateEvent() {
               color="whiteAlpha.900"
               icon={<FontAwesomeIcon icon={regular('calendar-plus')} />}
             />
-            &nbsp;Update event detail
+            &nbsp;Cập nhật công việc
           </Text>
         </ModalHeader>
         <ModalBody
           sx={{
             display: 'flex',
             flexDirection: 'row',
-            gap: '1rem',
+            gap: '0.5rem',
           }}
         >
           <Box
             sx={{
               display: 'flex',
+              flex: 1,
               flexDirection: 'column',
               gap: '0.5rem',
               p: 2,
@@ -145,7 +149,7 @@ export default function UpdateEvent() {
               control={control}
               name="name"
               type="text"
-              label="Event name"
+              label="Tên công việc"
               rules={formRules.name}
             />
 
@@ -153,7 +157,7 @@ export default function UpdateEvent() {
               control={control}
               name="description"
               type="textarea"
-              label="Description"
+              label="Mô tả"
               rules={formRules.description}
             />
 
@@ -161,7 +165,7 @@ export default function UpdateEvent() {
               control={control}
               name="startAt"
               type="datetime-local"
-              label="Start time"
+              label="Bắt đầu"
               rules={formRules.startAt}
             />
 
@@ -169,26 +173,28 @@ export default function UpdateEvent() {
               control={control}
               name="endAt"
               type="datetime-local"
-              label="End time"
+              label="Kết thúc"
               rules={formRules.endAt}
             />
 
-            <Controller
-              name="status"
-              rules={formRules.status}
-              control={control}
-              render={({ field: { onChange, onBlur, value, ref }, fieldState: { error } }) => (
-                <FormControl isInvalid={!!error}>
-                  <FormLabel>Status</FormLabel>
-                  <Select onChange={onChange} onBlur={onBlur} value={value} ref={ref}>
-                    <option value={EventStatuses.CREATED}>{EventStatuses.CREATED}</option>
-                    <option value={EventStatuses.IN_PROGRESS}>{EventStatuses.IN_PROGRESS}</option>
-                    <option value={EventStatuses.DONE}>{EventStatuses.DONE}</option>
-                  </Select>
-                  {error && <FormErrorMessage>{error?.message}</FormErrorMessage>}
-                </FormControl>
-              )}
-            />
+            {taskID && (
+              <Controller
+                name="status"
+                rules={formRules.status}
+                control={control}
+                render={({ field: { onChange, onBlur, value, ref }, fieldState: { error } }) => (
+                  <FormControl isInvalid={!!error}>
+                    <FormLabel>Trạng thái</FormLabel>
+                    <Select onChange={onChange} onBlur={onBlur} value={value} ref={ref}>
+                      <option value={EventStatuses.CREATED}>{EventStatuses.CREATED}</option>
+                      <option value={EventStatuses.IN_PROGRESS}>{EventStatuses.IN_PROGRESS}</option>
+                      <option value={EventStatuses.DONE}>{EventStatuses.DONE}</option>
+                    </Select>
+                    {error && <FormErrorMessage>{error?.message}</FormErrorMessage>}
+                  </FormControl>
+                )}
+              />
+            )}
 
             <Box
               direction="row"
@@ -199,7 +205,7 @@ export default function UpdateEvent() {
                 span: { width: '1.5rem', height: '1.5rem', m: 1, div: { fontSize: '9pt' } },
               }}
             >
-              {members?.map((member) => (
+              {assignees?.map((member) => (
                 <Box
                   cursor="pointer"
                   display="inline-block"
@@ -212,29 +218,23 @@ export default function UpdateEvent() {
             </Box>
 
             <Button type="submit" width="100%" mt={2} colorScheme="facebook">
-              Submit
+              <FontAwesomeIcon icon={solid('floppy-disk')} />
+              &nbsp;Lưu
             </Button>
           </Box>
 
           <Box
             sx={{
               display: 'flex',
+              flex: 1,
               flexDirection: 'column',
               gap: '0.5rem',
               p: 2,
               width: 'max-content',
             }}
           >
-            <Box>
-              <FormLabel>search member</FormLabel>
-              <Box as="div" sx={{ display: 'flex', flexDirection: 'row', gap: '0.3rem' }}>
-                <Input ref={userEmailRef} placeholder="Enter user email" />
-                <Button colorScheme="teal" onClick={onFindUser}>
-                  Find
-                </Button>
-              </Box>
-            </Box>
-            {users.length > 0 && (
+            <Text fontWeight="medium">Thành viên:</Text>
+            {selectedEvent?.members?.length > 0 && (
               <Box
                 sx={{
                   display: 'flex',
@@ -244,7 +244,7 @@ export default function UpdateEvent() {
                   alignItems: 'start',
                 }}
               >
-                {users.map((user) => (
+                {selectedEvent?.members?.map((user) => (
                   <Button
                     key={JSON.stringify(user)}
                     variant="ghost"

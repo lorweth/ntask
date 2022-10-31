@@ -2,11 +2,10 @@ import React from 'react';
 import { Avatar, AvatarGroup, Button, Flex, Image, Text } from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 export default function EventCard({ eventID, name, imageURL, startAt, endAt, members }) {
   const navigator = useNavigate();
-  const location = useLocation();
 
   const convertTime = (time) => {
     const date = new Date(time);
@@ -14,7 +13,7 @@ export default function EventCard({ eventID, name, imageURL, startAt, endAt, mem
   };
 
   const handleOnClickDetail = () => {
-    navigator(`/events/${eventID}`, { state: { backgroundLocation: location } });
+    navigator(`/events/${eventID}`);
   };
 
   return (

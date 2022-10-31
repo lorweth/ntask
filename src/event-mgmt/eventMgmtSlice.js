@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import StorageAPI from 'common/storageAPI';
+import { getMockTasks } from './mock-data';
 import { EventStatuses } from './utils';
 
 const API_URL = process.env.REACT_APP_API_URL;
@@ -8,8 +9,10 @@ const initialState = {
   createdEvents: [],
   inprogressEvents: [],
   doneEvents: [],
-  users: [],
   selectedEvent: null,
+  users: [],
+  tasks: [],
+  selectedTask: null,
   loading: false,
   updateSuccess: null,
   errMsg: null,
@@ -59,6 +62,19 @@ export const fetchEvents = createAsyncThunk(
     }).then((res) => res.json())
 );
 
+export const getEvent = createAsyncThunk('eventsMgmt/getEvent', async (eventId) =>
+  fetch(`${API_URL}/events/${eventId}`, {
+    method: 'GET',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${
+        StorageAPI.local.get('authToken') || StorageAPI.local.get('authToken')
+      }`,
+    },
+  }).then((res) => res.json())
+);
+
 export const createEvent = createAsyncThunk(
   'eventsMgmt/createEvent',
   async ({ name, description, startAt, endAt }) =>
@@ -91,19 +107,6 @@ export const updateEvent = createAsyncThunk(
     }).then((res) => res.json())
 );
 
-export const getEvent = createAsyncThunk('eventsMgmt/getEvent', async (eventId) =>
-  fetch(`${API_URL}/events/${eventId}`, {
-    method: 'GET',
-    mode: 'cors',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${
-        StorageAPI.local.get('authToken') || StorageAPI.local.get('authToken')
-      }`,
-    },
-  }).then((res) => res.json())
-);
-
 export const fetchUsers = createAsyncThunk(
   'eventsMgmt/fetchUsers',
   async ({ q, page = 0, size = 30 }) =>
@@ -116,6 +119,83 @@ export const fetchUsers = createAsyncThunk(
           StorageAPI.local.get('authToken') || StorageAPI.local.get('authToken')
         }`,
       },
+    }).then((res) => res.json())
+);
+
+export const fetchTasks = createAsyncThunk(
+  'eventsMgmt/fetchTasks',
+  async ({ eventID, page, size }) =>
+    fetch(`${API_URL}/events/${eventID}/tasks?${new URLSearchParams({ page, size })}`, {
+      method: 'GET',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${
+          StorageAPI.local.get('authToken') || StorageAPI.local.get('authToken')
+        }`,
+      },
+    }).then((res) => res.json())
+);
+
+export const fetchTasksForTest = createAsyncThunk(
+  'eventsMgmt/fetchTasksForTest',
+  async ({ eventID, page, size }) => {
+    const res = await getMockTasks({ eventID, page, size });
+    return res;
+  }
+);
+
+export const getTask = createAsyncThunk('eventsMgmt/getTask', async (taskID) =>
+  fetch(`${API_URL}/tasks/${taskID}`, {
+    method: 'GET',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${
+        StorageAPI.local.get('authToken') || StorageAPI.local.get('authToken')
+      }`,
+    },
+  }).then((res) => res.json())
+);
+
+export const createTask = createAsyncThunk(
+  'eventsMgmt/createTask',
+  async ({ name, description, startAt, endAt, status, event, assignees }) =>
+    fetch(`${API_URL}/tasks`, {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${
+          StorageAPI.local.get('authToken') || StorageAPI.local.get('authToken')
+        }`,
+      },
+      body: JSON.stringify({ name, description, startAt, endAt, status, event, assignees }),
+    }).then((res) => res.json())
+);
+
+export const updateTask = createAsyncThunk(
+  'eventsMgmt/updateTask',
+  async ({ id, name, description, startAt, endAt, status, event, assignees }) =>
+    fetch(`${API_URL}/tasks/${id}`, {
+      method: 'PATCH',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${
+          StorageAPI.local.get('authToken') || StorageAPI.local.get('authToken')
+        }`,
+      },
+      body: JSON.stringify({
+        id,
+        name,
+        description,
+        startAt,
+        endAt,
+        status,
+        event,
+        assignees,
+      }),
     }).then((res) => res.json())
 );
 
@@ -183,6 +263,54 @@ const eventMgmtSlice = createSlice({
         state.loading = true;
       })
       .addCase(fetchUsers.rejected, (state, action) => {
+        state.loading = false;
+        state.errMsg = action.error.message || 'Something went wrong';
+      })
+      .addCase(fetchTasks.fulfilled, (state, action) => {
+        state.loading = false;
+        state.tasks = action.payload.content;
+        state.updateSuccess = null;
+      })
+      .addCase(fetchTasks.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchTasks.rejected, (state, action) => {
+        state.loading = false;
+        state.errMsg = action.error.message || 'Something went wrong';
+      })
+      .addCase(getTask.fulfilled, (state, action) => {
+        state.loading = false;
+        state.selectedTask = action.payload;
+      })
+      .addCase(getTask.pending, (state) => {
+        state.loading = true;
+        state.selectedTask = null;
+      })
+      .addCase(getTask.rejected, (state, action) => {
+        state.loading = false;
+        state.errMsg = action.error.message || 'Something went wrong';
+      })
+      .addCase(createTask.fulfilled, (state) => {
+        state.loading = false;
+        state.updateSuccess = true;
+      })
+      .addCase(createTask.pending, (state) => {
+        state.loading = true;
+        state.updateSuccess = null;
+      })
+      .addCase(createTask.rejected, (state, action) => {
+        state.loading = false;
+        state.errMsg = action.error.message || 'Something went wrong';
+      })
+      .addCase(updateTask.fulfilled, (state) => {
+        state.loading = false;
+        state.updateSuccess = true;
+      })
+      .addCase(updateTask.pending, (state) => {
+        state.loading = true;
+        state.updateSuccess = null;
+      })
+      .addCase(updateTask.rejected, (state, action) => {
         state.loading = false;
         state.errMsg = action.error.message || 'Something went wrong';
       });

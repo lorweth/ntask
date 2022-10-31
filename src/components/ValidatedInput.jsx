@@ -23,14 +23,14 @@ function InputComponent({ type, onChange, onBlur, value, innerRef }) {
  * @see https://react-hook-form.com/api/useform/register
  * @returns the Input with validation
  */
-export default function ValidatedInput({ control, name, type, label, rules }) {
+export default function ValidatedInput({ control, name, type, label, rules, sx }) {
   return (
     <Controller
       name={name}
       rules={rules}
       control={control}
       render={({ field: { onChange, onBlur, value, ref }, fieldState: { error } }) => (
-        <FormControl isInvalid={!!error}>
+        <FormControl sx={sx} isInvalid={!!error}>
           <FormLabel>{label}</FormLabel>
           <InputComponent
             type={type}

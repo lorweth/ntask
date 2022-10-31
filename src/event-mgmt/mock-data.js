@@ -1,3 +1,5 @@
+/* eslint-disable import/prefer-default-export */
+/* eslint-disable no-promise-executor-return */
 import { EventStatuses } from './utils';
 
 const eventData = [
@@ -51,8 +53,57 @@ const eventData = [
   },
 ];
 
-export const getMockEvents = () =>
-  // eslint-disable-next-line no-promise-executor-return
-  new Promise((resolve) => setTimeout(() => resolve({ data: eventData }), 500));
+const taskData = [
+  {
+    id: 1,
+    name: 'Task 1',
+    description: 'Mô tả task 1',
+    status: EventStatuses.CREATED,
+    event: 1,
+    startAt: '2022-11-20T20:00:00Z',
+    endAt: '2022-11-20T23:00:00Z',
+    assignees: [
+      {
+        id: 1,
+        login: 'user1',
+        avatarUrl: 'https://picsum.photos/200/300',
+      },
+      {
+        id: 2,
+        login: 'user2',
+        avatarUrl: 'https://picsum.photos/200/300',
+      },
+    ],
+  },
+  {
+    id: 2,
+    name: 'Task 2',
+    description: 'Mô tả task 2',
+    status: EventStatuses.IN_PROGRESS,
+    event: 1,
+    startAt: '2022-11-20T20:00:00Z',
+    endAt: '2022-11-20T23:00:00Z',
+    assignees: [
+      {
+        id: 1,
+        login: 'user1',
+        avatarUrl: 'https://picsum.photos/200/300',
+      },
+      {
+        id: 2,
+        login: 'user2',
+        avatarUrl: 'https://picsum.photos/200/300',
+      },
+    ],
+  },
+];
 
-export default { eventData };
+export const getMockEvents = () =>
+  new Promise((resolve) => setTimeout(() => resolve({ content: eventData }), 500));
+
+export const getMockTasks = ({ eventID, page, size }) =>
+  new Promise((resolve) =>
+    setTimeout(() => resolve({ eventID, page, size, content: taskData }), 500)
+  );
+
+export default { eventData, taskData };

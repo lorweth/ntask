@@ -11,3 +11,8 @@ export const EventStatusLabels = {
   [EventStatuses.IN_PROGRESS]: 'inprogressEvents',
   [EventStatuses.DONE]: 'doneEvents',
 };
+
+export const convertTime = (time) => {
+  const date = new Date(time);
+  return date.toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+};
