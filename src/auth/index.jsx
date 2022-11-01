@@ -18,12 +18,18 @@ const SignOut = withSuspense(
   <Skeleton.SignInSkeleton />
 );
 
+const UserProfile = withSuspense(
+  React.lazy(() => import('./UserProfile')),
+  <Skeleton.SignInSkeleton />
+);
+
 export default function Auth() {
   return (
     <Routes>
       <Route path="/signin" element={<SignIn />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/signout" element={<SignOut />} />
+      <Route path="/profile" element={<UserProfile />} />
     </Routes>
   );
 }

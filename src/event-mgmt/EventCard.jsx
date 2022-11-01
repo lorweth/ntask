@@ -1,12 +1,19 @@
 import React from 'react';
-import { Avatar, AvatarGroup, Badge, Box, Flex, Image, Text } from '@chakra-ui/react';
+import { Avatar, AvatarGroup, Button, Flex, Image, Text } from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
+import { useNavigate } from 'react-router-dom';
 
-export default function EventCard({ name, imageURL, location, startAt, endAt, tags, members }) {
+export default function EventCard({ eventID, name, imageURL, startAt, endAt, members }) {
+  const navigator = useNavigate();
+
   const convertTime = (time) => {
     const date = new Date(time);
     return date.toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+  };
+
+  const handleOnClickDetail = () => {
+    navigator(`/events/${eventID}`);
   };
 
   return (
@@ -17,30 +24,25 @@ export default function EventCard({ name, imageURL, location, startAt, endAt, ta
       </Text>
       <Flex alignItems="center" gap={2}>
         <FontAwesomeIcon icon={solid('clock')} color="gray" />
-        {convertTime(startAt)} - {convertTime(endAt)}
+        {convertTime(startAt)}
       </Flex>
       <Flex alignItems="center" gap={2}>
-        <FontAwesomeIcon icon={solid('location')} color="gray" />
-        {location}
+        <FontAwesomeIcon icon={solid('hourglass')} color="gray" />
+        {convertTime(endAt)}
       </Flex>
-      <Flex justifyContent="space-between" alignItems="center">
-        <Flex gap={2}>
-          {tags &&
-            tags.map((tag) => (
-              <Badge key={tag} colorScheme="green">
-                {tag}
-              </Badge>
+      <Flex justifyContent="flex-end">
+        {members && (
+          <AvatarGroup size="sm" max={2}>
+            {members.map((member) => (
+              <Avatar key={member.login} size="sm" name={member.login} src={member.avatarUrl} />
             ))}
-        </Flex>
-        <Box>
-          {members && (
-            <AvatarGroup size="sm" max={2}>
-              {members.map((member) => (
-                <Avatar size="sm" name={member.username} src="https://bit.ly/ryan-florence" />
-              ))}
-            </AvatarGroup>
-          )}
-        </Box>
+          </AvatarGroup>
+        )}
+      </Flex>
+      <Flex justifyContent="flex-end" mt={3}>
+        <Button colorScheme="green" size="sm" onClick={handleOnClickDetail}>
+          Chi tiết
+        </Button>
       </Flex>
     </Flex>
   );

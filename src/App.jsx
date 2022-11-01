@@ -84,14 +84,18 @@ export default function App() {
         <Box>
           <AppSidebar title="nTask" brandIcon="/logo192.png" items={sidebarItems} pos="fixed" />
           <AppHeader title="nTask" brandIcon="/logo192.png">
-            <AppHeaderUser username={userData?.login} role={userData?.authorities?.[0]} />
+            <AppHeaderUser
+              username={userData?.login}
+              role={userData?.authorities?.[0]}
+              avatarLink={userData?.avatarUrl}
+            />
           </AppHeader>
           <AppContent>
             <Routes location={location.state?.backgroundLocation || location}>
               <Route index element={<Home username="Vae" />} />
               <Route path="/home" element={<Home username="Vae" />} />
               <Route path="/drapdrop" element={<DragDrop />} />
-              <Route path="/events" element={<EventMgmt />} />
+              <Route path="/events/*" element={<EventMgmt />} />
               <Route path="/counter" element={<Counter />} />
             </Routes>
 
