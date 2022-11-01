@@ -20,9 +20,7 @@ const AppSidebar = withSuspense(
 );
 
 const Home = withSuspense(React.lazy(() => import('home')));
-const Counter = withSuspense(React.lazy(() => import('counter')));
 const Auth = withSuspense(React.lazy(() => import('auth')));
-const DragDrop = withSuspense(React.lazy(() => import('drapdrop')));
 const EventMgmt = withSuspense(React.lazy(() => import('event-mgmt')));
 
 const StyledContainer = chakra('div', {
@@ -94,9 +92,7 @@ export default function App() {
             <Routes location={location.state?.backgroundLocation || location}>
               <Route index element={<Home username="Vae" />} />
               <Route path="/home" element={<Home username="Vae" />} />
-              <Route path="/drapdrop" element={<DragDrop />} />
               <Route path="/events/*" element={<EventMgmt />} />
-              <Route path="/counter" element={<Counter />} />
             </Routes>
 
             {/* Show modal when backgroundLocation is set */}
