@@ -10,6 +10,7 @@ import {
   faList,
   faListCheck,
   faUsers,
+  faMessage,
 } from '@fortawesome/free-solid-svg-icons';
 
 const loadIcon = () => {
@@ -23,7 +24,8 @@ const loadIcon = () => {
     faCalculator,
     faCalendar,
     faListCheck,
-    faCopy
+    faCopy,
+    faMessage
   );
 };
 
