@@ -56,7 +56,7 @@ export const fetchEvents = createAsyncThunk(
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${
-          StorageAPI.local.get('authToken') || StorageAPI.local.get('authToken')
+          StorageAPI.local.get('authToken') || StorageAPI.session.get('authToken')
         }`,
       },
     }).then((res) => res.json())
@@ -69,7 +69,7 @@ export const getEvent = createAsyncThunk('eventsMgmt/getEvent', async (eventId) 
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${
-        StorageAPI.local.get('authToken') || StorageAPI.local.get('authToken')
+        StorageAPI.local.get('authToken') || StorageAPI.session.get('authToken')
       }`,
     },
   }).then((res) => res.json())
@@ -84,7 +84,7 @@ export const createEvent = createAsyncThunk(
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${
-          StorageAPI.local.get('authToken') || StorageAPI.local.get('authToken')
+          StorageAPI.local.get('authToken') || StorageAPI.session.get('authToken')
         }`,
       },
       body: JSON.stringify({ name, description, startAt, endAt }),
@@ -100,7 +100,7 @@ export const updateEvent = createAsyncThunk(
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${
-          StorageAPI.local.get('authToken') || StorageAPI.local.get('authToken')
+          StorageAPI.local.get('authToken') || StorageAPI.session.get('authToken')
         }`,
       },
       body: JSON.stringify({ id: eventID, name, description, startAt, endAt, status, members }),
@@ -116,7 +116,7 @@ export const fetchUsers = createAsyncThunk(
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${
-          StorageAPI.local.get('authToken') || StorageAPI.local.get('authToken')
+          StorageAPI.local.get('authToken') || StorageAPI.session.get('authToken')
         }`,
       },
     }).then((res) => res.json())
@@ -131,7 +131,7 @@ export const fetchTasks = createAsyncThunk(
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${
-          StorageAPI.local.get('authToken') || StorageAPI.local.get('authToken')
+          StorageAPI.local.get('authToken') || StorageAPI.session.get('authToken')
         }`,
       },
     }).then((res) => res.json())
@@ -152,7 +152,7 @@ export const getTask = createAsyncThunk('eventsMgmt/getTask', async (taskID) =>
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${
-        StorageAPI.local.get('authToken') || StorageAPI.local.get('authToken')
+        StorageAPI.local.get('authToken') || StorageAPI.session.get('authToken')
       }`,
     },
   }).then((res) => res.json())
@@ -167,7 +167,7 @@ export const createTask = createAsyncThunk(
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${
-          StorageAPI.local.get('authToken') || StorageAPI.local.get('authToken')
+          StorageAPI.local.get('authToken') || StorageAPI.session.get('authToken')
         }`,
       },
       body: JSON.stringify({ name, description, startAt, endAt, status, event, assignees }),
@@ -183,7 +183,7 @@ export const updateTask = createAsyncThunk(
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${
-          StorageAPI.local.get('authToken') || StorageAPI.local.get('authToken')
+          StorageAPI.local.get('authToken') || StorageAPI.session.get('authToken')
         }`,
       },
       body: JSON.stringify({

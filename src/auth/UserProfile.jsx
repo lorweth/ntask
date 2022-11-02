@@ -16,13 +16,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import ValidatedInput from 'components/ValidatedInput';
 import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { updateProfile } from './authSlice';
 
 export default function EditProfile() {
   const dispatch = useDispatch();
   const navigator = useNavigate();
-  const { userData, updateSuccess } = useSelector((state) => state.auth);
+  const location = useLocation();
+  const { userData } = useSelector((state) => state.auth);
   const { control, handleSubmit, setValue } = useForm({
     defaultValues: {
       login: '',
@@ -41,16 +42,10 @@ export default function EditProfile() {
     setValue('email', userData.email);
   }, [userData]);
 
-  useEffect(() => {
-    if (updateSuccess) {
-      navigator('/');
-    }
-  }, [updateSuccess]);
-
-  const onClose = () => navigator(-1);
+  const onClose = () => navigator(location.state?.backgroundLocation?.pathname || '/');
 
   const onSubmit = (values) => {
-    dispatch(updateProfile({ ...userData, ...values }));
+    dispatch(updateProfile({ ...userData, ...values, roles: userData.authorities }));
   };
 
   const formRules = {

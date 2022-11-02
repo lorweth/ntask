@@ -22,6 +22,7 @@ const AppSidebar = withSuspense(
 const Home = withSuspense(React.lazy(() => import('home')));
 const Auth = withSuspense(React.lazy(() => import('auth')));
 const EventMgmt = withSuspense(React.lazy(() => import('event-mgmt')));
+const Chat = withSuspense(React.lazy(() => import('chat')));
 
 const StyledContainer = chakra('div', {
   baseStyle: {
@@ -42,14 +43,9 @@ const sidebarItems = [
     path: '/events',
   },
   {
-    title: 'Công việc',
-    icon: 'list-check',
-    path: '/tasks',
-  },
-  {
-    title: 'Bản sao',
-    icon: 'copy',
-    path: '/backups',
+    title: 'Nhắn tin',
+    icon: 'message',
+    path: '/chat',
   },
 ];
 
@@ -93,6 +89,7 @@ export default function App() {
               <Route index element={<Home username="Vae" />} />
               <Route path="/home" element={<Home username="Vae" />} />
               <Route path="/events/*" element={<EventMgmt />} />
+              <Route path="/chat" element={<Chat />} />
             </Routes>
 
             {/* Show modal when backgroundLocation is set */}
