@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
 import * as SockJS from 'sockjs-client';
 import { over } from 'stompjs';
-import { fetchChatRooms } from './chatSlice';
+import { fetchChatRooms, fetchMessage } from './chatSlice';
 
 const WS_URL = process.env.REACT_APP_WS_URL;
 
@@ -14,6 +14,7 @@ export default function Chat() {
   const dispatch = useDispatch();
   const userData = useSelector((state) => state.auth.userData);
   const rooms = useSelector((state) => state.chat.events);
+  const msgList = useSelector((state) => state.chat.msgList);
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [sendInfo, setSendInfo] = useState({
     from: null,
@@ -49,12 +50,19 @@ export default function Chat() {
   // Update sendInfo when selectedRoom changes
   useEffect(() => {
     if (selectedRoom) {
+      dispatch(fetchMessage({ eventID: selectedRoom.id, page: 0, size: 30 }));
       // Subscribe to room chat
       stompClient.subscribe(`/topic/${selectedRoom.id}`, (payload) => {
         setMessages((msg) => [JSON.parse(payload.body), ...msg]);
       });
     }
   }, [selectedRoom]);
+
+  useEffect(() => {
+    if (msgList) {
+      setMessages(msgList);
+    }
+  }, [msgList]);
 
   const onClickRoom = (room) => {
     dispatch(setSelectedRoom(room));
