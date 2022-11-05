@@ -331,19 +331,19 @@ export default function EventDetail() {
       <Box sx={{ display: 'flex', flexDirection: 'row', gap: '1rem' }}>
         <TicketList
           title="Sắp diễn ra"
-          data={tasks.filter((task) => task.status === EventStatuses.CREATED)}
+          data={tasks?.filter((task) => task.status === EventStatuses.CREATED) || []}
           onClickDetail={onClickTaskDetail}
           TicketComponent={TaskCard}
         />
         <TicketList
           title="Đang diễn ra"
-          data={tasks.filter((task) => task.status === EventStatuses.IN_PROGRESS)}
+          data={tasks?.filter((task) => task.status === EventStatuses.IN_PROGRESS) || []}
           onClickDetail={onClickTaskDetail}
           TicketComponent={TaskCard}
         />
         <TicketList
           title="Đã kết thúc"
-          data={tasks.filter((task) => task.status === EventStatuses.DONE)}
+          data={tasks?.filter((task) => task.status === EventStatuses.DONE) || []}
           onClickDetail={onClickTaskDetail}
           TicketComponent={TaskCard}
         />
