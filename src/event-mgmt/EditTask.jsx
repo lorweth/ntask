@@ -58,8 +58,7 @@ export default function EditTask() {
     endAt: {
       required: 'End time is required',
       validate: (value) =>
-        dayjs(value).isAfter(dayjs(startAtRef.current.value)) ||
-        'End time must be after start time',
+        dayjs(value).isAfter(dayjs(startAtRef.current)) || 'End time must be after start time',
     },
     status: {
       required: 'Status is required',
