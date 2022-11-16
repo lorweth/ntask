@@ -2,8 +2,21 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import ValidatedInput from 'components/ValidatedInput';
 import ValidatedCheck from 'components/ValidatedCheck';
-import { useDispatch } from 'react-redux';
-import { Avatar, Box, Button, Flex, Image, Link, ScaleFade, Text } from '@chakra-ui/react';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Avatar,
+  Box,
+  Button,
+  Flex,
+  Image,
+  Link,
+  ScaleFade,
+  Text,
+} from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { regular } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { NavLink } from 'react-router-dom';
@@ -11,15 +24,16 @@ import { signin } from './authSlice';
 
 const formRules = {
   username: {
-    required: 'Username cannot be blank',
+    required: 'Bắt buộc nhập',
   },
   password: {
-    required: 'Password cannot be blank',
+    required: 'Bắt buộc nhập',
   },
 };
 
 export default function SignIn() {
   const dispatch = useDispatch();
+  const { errorMessage } = useSelector((state) => state.auth);
 
   const { control, handleSubmit } = useForm({
     defaultValues: {
@@ -71,8 +85,15 @@ export default function SignIn() {
                 color="white"
                 icon={<FontAwesomeIcon icon={regular('user')} />}
               />
-              <Text>Login</Text>
+              <Text>Đăng nhập</Text>
             </Flex>
+            {errorMessage && (
+              <Alert status="error">
+                <AlertIcon />
+                <AlertTitle>Đăng nhập thất bại</AlertTitle>
+                <AlertDescription>{errorMessage}</AlertDescription>
+              </Alert>
+            )}
             <Box
               as="form"
               noValidate
@@ -83,7 +104,7 @@ export default function SignIn() {
                 control={control}
                 name="username"
                 type="text"
-                label="Username"
+                label="Tên tài khoản"
                 rules={formRules.username}
               />
 
@@ -91,28 +112,19 @@ export default function SignIn() {
                 control={control}
                 name="password"
                 type="password"
-                label="Password"
+                label="Mật khẩu"
                 rules={formRules.password}
               />
 
-              <ValidatedCheck control={control} name="rememberMe" label="Remember me" />
+              <ValidatedCheck control={control} name="rememberMe" label="Ghi nhớ tài khoản" />
 
               <Button type="submit" width="100%">
-                Submit
-              </Button>
-              <Button
-                borderColor="green.500"
-                color="green.500"
-                type="submit"
-                width="100%"
-                variant="outline"
-              >
-                Forgot your password
+                Gửi
               </Button>
               <Text color="gray.500">
-                Don&apos;t have an account?&nbsp;
+                Bạn chưa có tài khoản?&nbsp;
                 <Link as={NavLink} to="/auth/signup" fontWeight="bold" color="teal.400">
-                  Create an account
+                  Tạo tài khoản
                 </Link>
               </Text>
             </Box>

@@ -8,6 +8,13 @@ import {
   FormErrorMessage,
   FormLabel,
   Input,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   Select,
   Text,
 } from '@chakra-ui/react';
@@ -19,48 +26,82 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchTasks, fetchUsers, getEvent, updateEvent } from './eventMgmtSlice';
-import { EventStatuses } from './utils';
+import { EventStatus, EventStatusLabel, MemberRole } from './utils';
 import TicketList from './TicketList';
 import { withTicket } from './Ticket';
+
+function RemoveMemberModal({ isOpen, onClose, memberID, onRemoveMember }) {
+  const onAgree = () => {
+    onRemoveMember(memberID);
+    onClose();
+  };
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <ModalOverlay />
+      <ModalContent>
+        <ModalHeader>Xác nhận xóa thành viên</ModalHeader>
+        <ModalCloseButton />
+        <ModalBody>
+          <Text>Bạn có chắc chắn muốn xóa thành viên {memberID}?</Text>
+        </ModalBody>
+
+        <ModalFooter>
+          <Button colorScheme="red" mr={3} onClick={onAgree}>
+            Đồng ý
+          </Button>
+          <Button variant="ghost" onClick={onClose}>
+            Hủy
+          </Button>
+        </ModalFooter>
+      </ModalContent>
+    </Modal>
+  );
+}
 
 export default function EventDetail() {
   const { eventID } = useParams();
   const dispatch = useDispatch();
   const location = useLocation();
   const navigator = useNavigate();
-  const { selectedEvent, users, tasks, updateSuccess } = useSelector((state) => state.eventMgmt);
+  const { selectedEvent, users, tasks, updateSuccess, deleteTaskSuccess } = useSelector(
+    (state) => state.eventMgmt
+  );
   const { control, handleSubmit, watch, setValue } = useForm({
     defaultValues: {
       name: '',
       description: '',
-      startAt: '',
-      endAt: '',
+      startAt: dayjs().format('YYYY-MM-DDTHH:mm'),
+      endAt: dayjs().add(1, 'hour').format('YYYY-MM-DDTHH:mm'),
       status: '',
     },
   });
   const startAtRef = useRef({});
-  startAtRef.current = watch('startAt', '');
+  startAtRef.current = watch('startAt', dayjs().format('YYYY-MM-DDTHH:mm'));
   const userEmailRef = useRef({});
   const [members, setMembers] = useState([]);
+  const [selectedMemberID, setSelectedMemberID] = useState('');
+  const [isOpenRemoveMemberModal, setIsOpenRemoveMemberModal] = useState(false);
   const TaskCard = withTicket('task');
 
   const formRules = {
     name: {
-      required: 'Name is required',
+      required: 'Tên sự kiện là bắt buộc',
     },
     description: {
-      required: 'Description is required',
+      required: 'Mô tả là bắt buộc',
     },
     startAt: {
-      required: 'Start time is required',
+      required: 'Thời gian bắt đầu là bắt buộc',
     },
     endAt: {
-      required: 'End time is required',
+      required: 'Thời gian kết thúc là bắt buộc',
       validate: (value) =>
-        dayjs(value).isAfter(dayjs(startAtRef.current)) || 'End time must be after start time',
+        dayjs(value).isAfter(dayjs(startAtRef.current)) ||
+        'Thời gian kết thúc phải sau thời gian bắt đầu',
     },
     status: {
-      required: 'Status is required',
+      required: 'Trạng thái sự kiện là bắt buộc',
     },
   };
 
@@ -83,9 +124,18 @@ export default function EventDetail() {
       setValue('startAt', dayjs(selectedEvent.startAt).format('YYYY-MM-DDTHH:mm'));
       setValue('endAt', dayjs(selectedEvent.endAt).format('YYYY-MM-DDTHH:mm'));
       setValue('status', selectedEvent.status);
-      setMembers(selectedEvent.members);
+      setMembers(
+        selectedEvent.members.map((member) => ({ user: member.id, role: member.eventRole.id }))
+      );
     }
   }, [selectedEvent]);
+
+  useEffect(() => {
+    if (deleteTaskSuccess) {
+      dispatch(fetchTasks({ eventID, page: 0, size: 100 }));
+      navigator(location.state?.backgroundLocation?.pathname || -1);
+    }
+  }, deleteTaskSuccess);
 
   const onSubmit = (values) => {
     const startAt = dayjs(values.startAt).format('YYYY-MM-DDTHH:mm:ssZ');
@@ -95,11 +145,21 @@ export default function EventDetail() {
   };
 
   const onAddMember = (member) => {
-    setMembers([...members, member]);
+    setMembers([...members, { user: member.id, role: MemberRole }]);
   };
 
-  const onRemoveMember = (member) => {
-    setMembers(members.filter((m) => m.id !== member.id));
+  const onClickRemoveMember = (memberID) => {
+    setIsOpenRemoveMemberModal(true);
+    setSelectedMemberID(memberID);
+  };
+
+  const onClickCloseRemoveMemberModal = () => {
+    setIsOpenRemoveMemberModal(false);
+    setSelectedMemberID('');
+  };
+
+  const handleRemoveMember = (memberID) => {
+    setMembers(members.filter((m) => m.user !== memberID));
   };
 
   const onFindUser = () => {
@@ -117,6 +177,12 @@ export default function EventDetail() {
 
   const onClickTaskDetail = (taskID) => {
     navigator(`${location.pathname}/tasks/${taskID}`, {
+      state: { backgroundLocation: location },
+    });
+  };
+
+  const onClickDeleteTask = (taskID) => {
+    navigator(`${location.pathname}/tasks/${taskID}/delete`, {
       state: { backgroundLocation: location },
     });
   };
@@ -179,9 +245,9 @@ export default function EventDetail() {
                 <FormControl sx={{ flex: 1 }} isInvalid={!!error}>
                   <FormLabel>Trạng thái</FormLabel>
                   <Select onChange={onChange} onBlur={onBlur} value={value} ref={ref}>
-                    <option value={EventStatuses.CREATED}>{EventStatuses.CREATED}</option>
-                    <option value={EventStatuses.IN_PROGRESS}>{EventStatuses.IN_PROGRESS}</option>
-                    <option value={EventStatuses.DONE}>{EventStatuses.DONE}</option>
+                    <option value={EventStatus.CREATED}>{EventStatusLabel.CREATED}</option>
+                    <option value={EventStatus.IN_PROGRESS}>{EventStatusLabel.IN_PROGRESS}</option>
+                    <option value={EventStatus.DONE}>{EventStatusLabel.DONE}</option>
                   </Select>
                   {error && <FormErrorMessage>{error?.message}</FormErrorMessage>}
                 </FormControl>
@@ -237,8 +303,8 @@ export default function EventDetail() {
                 <Box
                   cursor="pointer"
                   display="inline-block"
-                  key={`member-${member.id}`}
-                  onClick={() => onRemoveMember(member)}
+                  key={`member-${member.user}`}
+                  onClick={() => onClickRemoveMember(member.user)}
                 >
                   <Avatar name={member.name} src={member.avatarUrl} />
                 </Box>
@@ -326,24 +392,35 @@ export default function EventDetail() {
         </Button>
       </Box>
 
+      {/* Remove member form */}
+      <RemoveMemberModal
+        isOpen={isOpenRemoveMemberModal}
+        onClose={onClickCloseRemoveMemberModal}
+        memberID={selectedMemberID}
+        onRemoveMember={handleRemoveMember}
+      />
+
       {/* Task List */}
       <Box sx={{ display: 'flex', flexDirection: 'row', gap: '1rem' }}>
         <TicketList
           title="Sắp diễn ra"
-          data={tasks?.filter((task) => task.status === EventStatuses.CREATED) || []}
+          data={tasks?.filter((task) => task.status === EventStatus.CREATED) || []}
           onClickDetail={onClickTaskDetail}
+          onClickDelete={onClickDeleteTask}
           TicketComponent={TaskCard}
         />
         <TicketList
           title="Đang diễn ra"
-          data={tasks?.filter((task) => task.status === EventStatuses.IN_PROGRESS) || []}
+          data={tasks?.filter((task) => task.status === EventStatus.IN_PROGRESS) || []}
           onClickDetail={onClickTaskDetail}
+          onClickDelete={onClickDeleteTask}
           TicketComponent={TaskCard}
         />
         <TicketList
           title="Đã kết thúc"
-          data={tasks?.filter((task) => task.status === EventStatuses.DONE) || []}
+          data={tasks?.filter((task) => task.status === EventStatus.DONE) || []}
           onClickDetail={onClickTaskDetail}
+          onClickDelete={onClickDeleteTask}
           TicketComponent={TaskCard}
         />
       </Box>

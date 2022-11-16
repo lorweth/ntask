@@ -65,7 +65,7 @@ export default function AppHeader({ title, brandIcon, sx, children }) {
   const { toggleColorMode } = useColorMode();
 
   const borderBottomColor = useColorModeValue('gray.200', 'gray.700');
-  const currColorModeIcon = useColorModeValue(solid('sun'), solid('moon'));
+  const currColorModeIcon = useColorModeValue(solid('moon'), solid('sun'));
 
   const handleClickToggleSidebar = () => {
     dispatch(toggleSidebar());
@@ -117,11 +117,11 @@ export default function AppHeader({ title, brandIcon, sx, children }) {
           </MenuButton>
           <MenuList color={useColorModeValue('black', 'white')}>
             <MenuItem as={NavLink} state={{ backgroundLocation: location }} to="/auth/profile">
-              Profile
+              Tài khoản
             </MenuItem>
             <MenuDivider />
             <MenuItem as={NavLink} state={{ backgroundLocation: location }} to="/auth/signout">
-              Sign out
+              Đăng xuất
             </MenuItem>
           </MenuList>
         </Menu>

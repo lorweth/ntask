@@ -96,7 +96,7 @@ export const signup = createAsyncThunk('auth/signUp', async ({ login, name, emai
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ login, name, email, password }),
-  }).then((resp) => resp.json())
+  }).then((resp) => resp.ok)
 );
 
 export const updateProfile = createAsyncThunk(
@@ -123,9 +123,14 @@ const authSlice = createSlice({
     builder
       .addCase(authenticate.fulfilled, (state, action) => {
         state.loading = false;
-        state.userData = action.payload;
-        state.loginSuccess = true;
-        state.errorMessage = null;
+        const { payload } = action;
+        if (payload.message && payload.message.startsWith('error')) {
+          state.loginSuccess = false;
+          state.errorMessage = `${payload.title} ${payload.detail}`;
+        } else {
+          state.loginSuccess = true;
+          state.userData = payload;
+        }
       })
       .addCase(authenticate.pending, (state) => {
         state.loading = true;
