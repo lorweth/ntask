@@ -26,7 +26,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchTasks, fetchUsers, getEvent, updateEvent } from './eventMgmtSlice';
-import { EventStatus, EventStatusLabel } from './utils';
+import { EventStatus, EventStatusLabel, MemberRole } from './utils';
 import TicketList from './TicketList';
 import { withTicket } from './Ticket';
 
@@ -124,7 +124,9 @@ export default function EventDetail() {
       setValue('startAt', dayjs(selectedEvent.startAt).format('YYYY-MM-DDTHH:mm'));
       setValue('endAt', dayjs(selectedEvent.endAt).format('YYYY-MM-DDTHH:mm'));
       setValue('status', selectedEvent.status);
-      setMembers(selectedEvent.members);
+      setMembers(
+        selectedEvent.members.map((member) => ({ user: member.id, role: member.eventRole.id }))
+      );
     }
   }, [selectedEvent]);
 
@@ -143,7 +145,7 @@ export default function EventDetail() {
   };
 
   const onAddMember = (member) => {
-    setMembers([...members, member]);
+    setMembers([...members, { user: member.id, role: MemberRole }]);
   };
 
   const onClickRemoveMember = (memberID) => {
@@ -157,7 +159,7 @@ export default function EventDetail() {
   };
 
   const handleRemoveMember = (memberID) => {
-    setMembers(members.filter((m) => m.id !== memberID));
+    setMembers(members.filter((m) => m.user !== memberID));
   };
 
   const onFindUser = () => {
@@ -301,8 +303,8 @@ export default function EventDetail() {
                 <Box
                   cursor="pointer"
                   display="inline-block"
-                  key={`member-${member.id}`}
-                  onClick={() => onClickRemoveMember(member.id)}
+                  key={`member-${member.user}`}
+                  onClick={() => onClickRemoveMember(member.user)}
                 >
                   <Avatar name={member.name} src={member.avatarUrl} />
                 </Box>

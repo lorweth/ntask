@@ -22,3 +22,5 @@ export const convertTime = (time) => {
   const date = new Date(time);
   return date.toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
 };
+
+export const MemberRole = 1;
