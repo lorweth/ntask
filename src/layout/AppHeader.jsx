@@ -117,11 +117,11 @@ export default function AppHeader({ title, brandIcon, sx, children }) {
           </MenuButton>
           <MenuList color={useColorModeValue('black', 'white')}>
             <MenuItem as={NavLink} state={{ backgroundLocation: location }} to="/auth/profile">
-              Profile
+              Tài khoản
             </MenuItem>
             <MenuDivider />
             <MenuItem as={NavLink} state={{ backgroundLocation: location }} to="/auth/signout">
-              Sign out
+              Đăng xuất
             </MenuItem>
           </MenuList>
         </Menu>

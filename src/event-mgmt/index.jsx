@@ -6,11 +6,12 @@ import { DragDropContext } from 'react-beautiful-dnd';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import EventList from './EventList';
-import { EventStatuses, EventStatusLabels } from './utils';
+import { EventStatus, EventStatusLabel, EventStatusTitle } from './utils';
 import { fetchEvents, reorder } from './eventMgmtSlice';
 import CreateEvent from './CreateEvent';
 import EventDetail from './EventDetail';
 import EditTask from './EditTask';
+import DeleteTask from './DeleteTask';
 
 function EventMgmt() {
   const dispatch = useDispatch();
@@ -89,18 +90,18 @@ function EventMgmt() {
         >
           <EventList
             title="Sắp diễn ra"
-            dropgableID={EventStatusLabels[EventStatuses.CREATED]}
-            eventStatus={EventStatuses.CREATED}
+            dropgableID={EventStatusTitle[EventStatusLabel.CREATED]}
+            eventStatus={EventStatus.CREATED}
           />
           <EventList
             title="Đang diễn ra"
-            dropgableID={EventStatusLabels[EventStatuses.IN_PROGRESS]}
-            eventStatus={EventStatuses.IN_PROGRESS}
+            dropgableID={EventStatusTitle[EventStatusLabel.IN_PROGRESS]}
+            eventStatus={EventStatus.IN_PROGRESS}
           />
           <EventList
             title="Đã kết thúc"
-            dropgableID={EventStatusLabels[EventStatuses.DONE]}
-            eventStatus={EventStatuses.DONE}
+            dropgableID={EventStatusTitle[EventStatusLabel.DONE]}
+            eventStatus={EventStatus.DONE}
           />
         </Box>
       </DragDropContext>
@@ -134,6 +135,7 @@ export default function EventMgmtPage() {
           <Route path="/new" element={<CreateEvent />} />
           <Route path="/:eventID/tasks/new" element={<EditTask />} />
           <Route path="/:eventID/tasks/:taskID" element={<EditTask />} />
+          <Route path="/:eventID/tasks/:taskID/delete" element={<DeleteTask />} />
         </Routes>
       )}
     </>

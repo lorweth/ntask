@@ -27,15 +27,15 @@ export default function SignOut() {
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
-          <Text fontWeight="bold">Are you sure you want to sign out?</Text>
+          <Text fontWeight="bold">Bạn muốn đăng xuất?</Text>
         </ModalHeader>
 
         <ModalFooter>
           <Button colorScheme="red" mr={3} onClick={onSignOut}>
-            Sign out
+            Đăng xuất
           </Button>
           <Button variant="ghost" onClick={onClose}>
-            Cancel
+            Hủy
           </Button>
         </ModalFooter>
       </ModalContent>

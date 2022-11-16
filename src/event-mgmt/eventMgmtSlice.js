@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import StorageAPI from 'common/storageAPI';
 import { getMockTasks } from './mock-data';
-import { EventStatuses } from './utils';
+import { EventStatus } from './utils';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -15,6 +15,7 @@ const initialState = {
   selectedTask: null,
   loading: false,
   updateSuccess: null,
+  deleteTaskSuccess: null,
   errMsg: null,
 };
 
@@ -50,7 +51,7 @@ const updateOrder = (list, startIndex, endIndex) => {
 export const fetchEvents = createAsyncThunk(
   'eventsMgmt/fetchEvents',
   async ({ page = 0, size = 30 }) =>
-    fetch(`${API_URL}/events?${new URLSearchParams({ page, size })}`, {
+    fetch(`${API_URL}/events/user?${new URLSearchParams({ page, size })}`, {
       method: 'GET',
       mode: 'cors',
       headers: {
@@ -199,6 +200,19 @@ export const updateTask = createAsyncThunk(
     }).then((res) => res.json())
 );
 
+export const deleteTask = createAsyncThunk('eventsMgmt/deleteTask', async (taskID) =>
+  fetch(`${API_URL}/tasks/${taskID}`, {
+    method: 'DELETE',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${
+        StorageAPI.local.get('authToken') || StorageAPI.session.get('authToken')
+      }`,
+    },
+  }).then((res) => res.ok)
+);
+
 const eventMgmtSlice = createSlice({
   name: 'eventsMgmt',
   initialState,
@@ -216,13 +230,14 @@ const eventMgmtSlice = createSlice({
     builder
       .addCase(fetchEvents.fulfilled, (state, action) => {
         const eventList = action.payload.content;
-        state.createdEvents = eventList.filter((event) => event.status === EventStatuses.CREATED);
+        state.createdEvents = eventList.filter((event) => event.status === EventStatus.CREATED);
         state.inprogressEvents = eventList.filter(
-          (event) => event.status === EventStatuses.IN_PROGRESS
+          (event) => event.status === EventStatus.IN_PROGRESS
         );
-        state.doneEvents = eventList.filter((event) => event.status === EventStatuses.DONE);
+        state.doneEvents = eventList.filter((event) => event.status === EventStatus.DONE);
         state.loading = false;
         state.updateSuccess = null;
+        state.deleteTaskSuccess = null;
       })
       .addCase(fetchEvents.pending, (state) => {
         state.loading = true;
@@ -312,6 +327,19 @@ const eventMgmtSlice = createSlice({
       })
       .addCase(updateTask.rejected, (state, action) => {
         state.loading = false;
+        state.errMsg = action.error.message || 'Something went wrong';
+      })
+      .addCase(deleteTask.fulfilled, (state, action) => {
+        state.loading = false;
+        state.deleteTaskSuccess = action.payload;
+      })
+      .addCase(deleteTask.pending, (state) => {
+        state.loading = true;
+        state.deleteTaskSuccess = null;
+      })
+      .addCase(deleteTask.rejected, (state, action) => {
+        state.loading = false;
+        state.deleteTaskSuccess = false;
         state.errMsg = action.error.message || 'Something went wrong';
       });
   },

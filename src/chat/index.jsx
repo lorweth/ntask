@@ -65,7 +65,7 @@ export default function Chat() {
   }, [msgList]);
 
   const onClickRoom = (room) => {
-    dispatch(setSelectedRoom(room));
+    setSelectedRoom(room);
   };
 
   const onSendMessage = (e) => {

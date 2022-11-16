@@ -20,7 +20,7 @@ export const withTicket = (ticketType) => (props) => {
     );
   }
   if (ticketType === 'task') {
-    const { name, startAt, endAt, assignees, onClickDetail } = props;
+    const { name, startAt, endAt, assignees, onClickDetail, onClickDelete } = props;
     return (
       <Ticket
         name={name}
@@ -28,12 +28,13 @@ export const withTicket = (ticketType) => (props) => {
         endAt={endAt}
         members={assignees}
         onClickDetail={onClickDetail}
+        onClickDelete={onClickDelete}
       />
     );
   }
 };
 
-export default function Ticket({ name, startAt, endAt, members, onClickDetail }) {
+export default function Ticket({ name, startAt, endAt, members, onClickDetail, onClickDelete }) {
   return (
     <Flex
       sx={{
@@ -67,8 +68,14 @@ export default function Ticket({ name, startAt, endAt, members, onClickDetail })
         )}
       </Flex>
       <Flex justifyContent="flex-end" mt={3}>
-        <Button colorScheme="green" size="sm" onClick={onClickDetail}>
-          Chi tiết
+        <Button colorScheme="teal" size="md" onClick={onClickDetail}>
+          <FontAwesomeIcon icon={solid('pen')} />
+          &nbsp;Chi tiết
+        </Button>
+        &nbsp;
+        <Button colorScheme="red" size="md" onClick={onClickDelete}>
+          <FontAwesomeIcon icon={solid('trash')} />
+          &nbsp;Xóa
         </Button>
       </Flex>
     </Flex>

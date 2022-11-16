@@ -1,15 +1,29 @@
 import React, { useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import ValidatedInput from 'components/ValidatedInput';
-import { Avatar, Box, Button, Flex, Image, Link, ScaleFade, Text } from '@chakra-ui/react';
+import {
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Avatar,
+  Box,
+  Button,
+  Flex,
+  Image,
+  Link,
+  ScaleFade,
+  Text,
+} from '@chakra-ui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { regular } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { NavLink } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { signup } from './authSlice';
 
 export default function SignUp() {
   const dispatch = useDispatch();
+  const { errorMessage } = useSelector((state) => state.auth);
 
   const { control, watch, handleSubmit } = useForm({
     defaultValues: {
@@ -26,29 +40,29 @@ export default function SignUp() {
 
   const formRules = {
     login: {
-      required: 'Login is required',
+      required: 'Tên tài khoản là bắt buộc',
     },
     name: {
-      required: 'Name is required',
+      required: 'Tên người dùng là bắt buộc',
     },
     email: {
-      required: 'Email is required',
+      required: 'Địa chỉ email là bắt buộc',
       pattern: {
         value:
           /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-        message: 'Please enter a valid email',
+        message: 'Địa chỉ email không hợp lệ',
       },
     },
     password: {
-      required: 'Password is required',
+      required: 'Mật khẩu là bắt buộc',
       min: {
         value: 6,
-        message: 'Password must have at least 6 characters',
+        message: 'Mật khẩu phải có ít nhất 6 ký tự',
       },
     },
     passwordConfirmation: {
-      required: 'Password confirmation is required',
-      validate: (value) => value === password.current || 'The passwords do not match',
+      required: 'Mật khẩu xác nhận là bắt buộc',
+      validate: (value) => value === password.current || 'Mật khẩu xác nhận không khớp',
     },
   };
 
@@ -94,8 +108,16 @@ export default function SignUp() {
                 color="whiteAlpha.900"
                 icon={<FontAwesomeIcon icon={regular('user')} />}
               />
-              &nbsp;Create your Account
+              &nbsp;Đăng ký
             </Text>
+
+            {errorMessage && (
+              <Alert status="error" mb={2}>
+                <AlertIcon />
+                <AlertTitle>Đăng ký thất bại</AlertTitle>
+                <AlertDescription>{errorMessage}</AlertDescription>
+              </Alert>
+            )}
 
             <Box
               as="form"
@@ -107,7 +129,7 @@ export default function SignUp() {
                 control={control}
                 name="name"
                 type="text"
-                label="Fullname"
+                label="Tên người dùng"
                 rules={formRules.name}
               />
 
@@ -115,7 +137,7 @@ export default function SignUp() {
                 control={control}
                 name="login"
                 type="text"
-                label="Username"
+                label="Tên tài khoản"
                 rules={formRules.login}
               />
 
@@ -131,7 +153,7 @@ export default function SignUp() {
                 control={control}
                 name="password"
                 type="password"
-                label="Password"
+                label="Mật khẩu"
                 rules={formRules.password}
               />
 
@@ -139,18 +161,18 @@ export default function SignUp() {
                 control={control}
                 name="passwordConfirmation"
                 type="password"
-                label="Password confirmation"
+                label="Nhập lại mật khẩu"
                 rules={formRules.passwordConfirmation}
               />
 
               <Button type="submit" width="100%" mt={2}>
-                Submit
+                Gửi
               </Button>
 
               <Text color="gray.500">
-                Already a member?{' '}
+                Đã có tải khoản?&nbsp;
                 <Link as={NavLink} to="/auth/signin" fontWeight="bold" color="teal.400">
-                  Sign in
+                  Đăng nhập
                 </Link>
               </Text>
             </Box>

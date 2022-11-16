@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 /* eslint-disable no-promise-executor-return */
-import { EventStatuses } from './utils';
+import { EventStatus } from './utils';
 
 const eventData = [
   {
@@ -8,7 +8,7 @@ const eventData = [
     name: 'Sự kiện 1',
     description: 'Mô tả sự kiện 1',
     imageURL: 'https://picsum.photos/200/300',
-    status: EventStatuses.CREATED,
+    status: EventStatus.CREATED,
     start_at: Date.parse('2022-11-20T23:00:00'),
     end_at: Date.parse('2022-11-20T23:00:00'),
     tags: ['tag1', 'tag2'],
@@ -23,7 +23,7 @@ const eventData = [
     id: 2,
     name: 'Sự kiện 2',
     description: 'Mô tả sự kiện 2',
-    status: EventStatuses.IN_PROGRESS,
+    status: EventStatus.IN_PROGRESS,
     start_at: Date.parse('2022-11-20T23:00:00'),
     end_at: Date.parse('2022-11-20T23:00:00'),
   },
@@ -31,7 +31,7 @@ const eventData = [
     id: 3,
     name: 'Sự kiện 3',
     description: 'Mô tả sự kiện 3',
-    status: EventStatuses.DONE,
+    status: EventStatus.DONE,
     start_at: Date.parse('2022-11-20T23:00:00'),
     end_at: Date.parse('2022-11-20T23:00:00'),
   },
@@ -39,7 +39,7 @@ const eventData = [
     id: 4,
     name: 'Sự kiện 4',
     description: 'Mô tả sự kiện 4',
-    status: EventStatuses.IN_PROGRESS,
+    status: EventStatus.IN_PROGRESS,
     start_at: Date.parse('2022-11-20T23:00:00'),
     end_at: Date.parse('2022-11-20T23:00:00'),
   },
@@ -47,7 +47,7 @@ const eventData = [
     id: 5,
     name: 'Sự kiện 5',
     description: 'Mô tả sự kiện 5',
-    status: EventStatuses.CREATED,
+    status: EventStatus.CREATED,
     start_at: Date.parse('2022-11-20T23:00:00'),
     end_at: Date.parse('2022-11-20T23:00:00'),
   },
@@ -58,7 +58,7 @@ const taskData = [
     id: 1,
     name: 'Task 1',
     description: 'Mô tả task 1',
-    status: EventStatuses.CREATED,
+    status: EventStatus.CREATED,
     event: 1,
     startAt: '2022-11-20T20:00:00Z',
     endAt: '2022-11-20T23:00:00Z',
@@ -79,7 +79,7 @@ const taskData = [
     id: 2,
     name: 'Task 2',
     description: 'Mô tả task 2',
-    status: EventStatuses.IN_PROGRESS,
+    status: EventStatus.IN_PROGRESS,
     event: 1,
     startAt: '2022-11-20T20:00:00Z',
     endAt: '2022-11-20T23:00:00Z',
