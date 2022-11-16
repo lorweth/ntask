@@ -65,7 +65,7 @@ export default function AppHeader({ title, brandIcon, sx, children }) {
   const { toggleColorMode } = useColorMode();
 
   const borderBottomColor = useColorModeValue('gray.200', 'gray.700');
-  const currColorModeIcon = useColorModeValue(solid('sun'), solid('moon'));
+  const currColorModeIcon = useColorModeValue(solid('moon'), solid('sun'));
 
   const handleClickToggleSidebar = () => {
     dispatch(toggleSidebar());
