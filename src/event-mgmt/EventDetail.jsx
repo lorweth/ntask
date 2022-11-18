@@ -25,10 +25,13 @@ import { Controller, useForm } from 'react-hook-form';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { useDispatch, useSelector } from 'react-redux';
+import { toastify } from 'common/toastify';
 import { fetchTasks, fetchUsers, getEvent, updateEvent } from './eventMgmtSlice';
-import { EventStatus, EventStatusLabel, MemberRole } from './utils';
+import { EMAIL_REGEX, EventStatus, EventStatusLabel, MemberRole } from './utils';
 import TicketList from './TicketList';
 import { withTicket } from './Ticket';
+
+const filePath = process.env.REACT_APP_FILE_URL;
 
 function RemoveMemberModal({ isOpen, onClose, memberID, onRemoveMember }) {
   const onAgree = () => {
@@ -63,7 +66,7 @@ export default function EventDetail() {
   const { eventID } = useParams();
   const dispatch = useDispatch();
   const location = useLocation();
-  const navigator = useNavigate();
+  const navigate = useNavigate();
   const { selectedEvent, users, tasks, updateSuccess, deleteTaskSuccess } = useSelector(
     (state) => state.eventMgmt
   );
@@ -125,7 +128,12 @@ export default function EventDetail() {
       setValue('endAt', dayjs(selectedEvent.endAt).format('YYYY-MM-DDTHH:mm'));
       setValue('status', selectedEvent.status);
       setMembers(
-        selectedEvent.members.map((member) => ({ user: member.id, role: member.eventRole.id }))
+        selectedEvent.members.map((m) => ({
+          user: m.id,
+          role: m.eventRole.id,
+          name: m.name,
+          avatarUrl: m.avatarUrl,
+        }))
       );
     }
   }, [selectedEvent]);
@@ -133,7 +141,7 @@ export default function EventDetail() {
   useEffect(() => {
     if (deleteTaskSuccess) {
       dispatch(fetchTasks({ eventID, page: 0, size: 100 }));
-      navigator(location.state?.backgroundLocation?.pathname || -1);
+      navigate(location.state?.backgroundLocation?.pathname || -1);
     }
   }, deleteTaskSuccess);
 
@@ -145,10 +153,22 @@ export default function EventDetail() {
   };
 
   const onAddMember = (member) => {
-    setMembers([...members, { user: member.id, role: MemberRole }]);
+    if (!members.find((m) => m.user === member.id)) {
+      setMembers([...members, { user: member.id, role: MemberRole }]);
+    } else {
+      toastify({ title: 'Cảnh báo', description: 'Thành viên đã tồn tại', status: 'warning' });
+    }
   };
 
   const onClickRemoveMember = (memberID) => {
+    if (members.length < 2) {
+      toastify({
+        title: 'Cảnh báo',
+        description: 'Sự kiện phải có ít nhất 1 thành viên',
+        status: 'warning',
+      });
+      return;
+    }
     setIsOpenRemoveMemberModal(true);
     setSelectedMemberID(memberID);
   };
@@ -158,31 +178,47 @@ export default function EventDetail() {
     setSelectedMemberID('');
   };
 
-  const handleRemoveMember = (memberID) => {
+  const onRemoveMember = (memberID) => {
     setMembers(members.filter((m) => m.user !== memberID));
   };
 
+  const validateFindUser = (email) => {
+    if (!email) {
+      return 'Email là bắt buộc';
+    }
+    if (!email.match(EMAIL_REGEX)) {
+      return 'Email không hợp lệ';
+    }
+    return null;
+  };
+
   const onFindUser = () => {
-    dispatch(fetchUsers({ q: userEmailRef.current.value, page: 0, size: 6 }));
+    const email = userEmailRef.current.value;
+    const notValid = validateFindUser(email);
+    if (!notValid) {
+      dispatch(fetchUsers({ q: userEmailRef.current.value, page: 0, size: 6 }));
+    } else {
+      toastify({ title: 'Cảnh báo', description: notValid, status: 'warning' });
+    }
   };
 
   // eslint-disable-next-line no-unused-vars
   const onBack = () => {
-    navigator(`/events`);
+    navigate(`/events`);
   };
 
   const onClickNewTask = () => {
-    navigator(`${location.pathname}/tasks/new`, { state: { backgroundLocation: location } });
+    navigate(`${location.pathname}/tasks/new`, { state: { backgroundLocation: location } });
   };
 
   const onClickTaskDetail = (taskID) => {
-    navigator(`${location.pathname}/tasks/${taskID}`, {
+    navigate(`${location.pathname}/tasks/${taskID}`, {
       state: { backgroundLocation: location },
     });
   };
 
   const onClickDeleteTask = (taskID) => {
-    navigator(`${location.pathname}/tasks/${taskID}/delete`, {
+    navigate(`${location.pathname}/tasks/${taskID}/delete`, {
       state: { backgroundLocation: location },
     });
   };
@@ -306,7 +342,7 @@ export default function EventDetail() {
                   key={`member-${member.user}`}
                   onClick={() => onClickRemoveMember(member.user)}
                 >
-                  <Avatar name={member.name} src={member.avatarUrl} />
+                  <Avatar name={member.name} src={`${filePath}/${member.avatarUrl}`} />
                 </Box>
               ))}
             </Box>
@@ -397,7 +433,7 @@ export default function EventDetail() {
         isOpen={isOpenRemoveMemberModal}
         onClose={onClickCloseRemoveMemberModal}
         memberID={selectedMemberID}
-        onRemoveMember={handleRemoveMember}
+        onRemoveMember={onRemoveMember}
       />
 
       {/* Task List */}

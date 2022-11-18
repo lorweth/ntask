@@ -81,7 +81,7 @@ export default function App() {
             <AppHeaderUser
               username={userData?.login}
               role={userData?.authorities?.[0]}
-              avatarLink={userData?.avatarUrl}
+              avatarLink={`${userData?.avatarUrl}`}
             />
           </AppHeader>
           <AppContent>

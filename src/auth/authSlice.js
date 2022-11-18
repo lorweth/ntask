@@ -126,7 +126,11 @@ const authSlice = createSlice({
         const { payload } = action;
         if (payload.message && payload.message.startsWith('error')) {
           state.loginSuccess = false;
-          state.errorMessage = `${payload.title} ${payload.detail}`;
+          if (payload.status === 401) {
+            state.errorMessage = 'Tên đăng nhập hoặc mật khẩu không đúng';
+          } else {
+            state.errorMessage = 'Đã có lỗi xảy ra';
+          }
         } else {
           state.loginSuccess = true;
           state.userData = payload;
@@ -137,10 +141,10 @@ const authSlice = createSlice({
         state.loginSuccess = null;
         state.errorMessage = null;
       })
-      .addCase(authenticate.rejected, (state, action) => {
+      .addCase(authenticate.rejected, (state) => {
         state.loading = false;
         state.loginSuccess = false;
-        state.errorMessage = action.error.message || 'Something went wrong';
+        state.errorMessage = 'Có lỗi xảy ra';
       })
       .addCase(getUserData.fulfilled, (state, action) => {
         state.loading = false;
@@ -154,10 +158,10 @@ const authSlice = createSlice({
         state.loginSuccess = null;
         state.errorMessage = null;
       })
-      .addCase(getUserData.rejected, (state, action) => {
+      .addCase(getUserData.rejected, (state) => {
         state.loading = false;
         state.loginSuccess = false;
-        state.errorMessage = action.error.message || 'Something went wrong';
+        state.errorMessage = 'Có lỗi xảy ra';
       })
       .addCase(signup.fulfilled, (state) => {
         state.loading = false;
@@ -166,9 +170,9 @@ const authSlice = createSlice({
         state.loading = true;
         state.errorMessage = null;
       })
-      .addCase(signup.rejected, (state, action) => {
+      .addCase(signup.rejected, (state) => {
         state.loading = false;
-        state.errorMessage = action.error.message || 'Something went wrong';
+        state.errorMessage = 'Có lỗi xảy ra';
       })
       .addCase(updateProfile.fulfilled, (state) => {
         state.loading = false;
@@ -178,10 +182,10 @@ const authSlice = createSlice({
         state.loading = true;
         state.updateSuccess = null;
       })
-      .addCase(updateProfile.rejected, (state, action) => {
+      .addCase(updateProfile.rejected, (state) => {
         state.loading = false;
         state.updateSuccess = false;
-        state.errorMessage = action.error.message || 'Something went wrong';
+        state.errorMessage = 'Có lỗi xảy ra';
       });
   },
 });

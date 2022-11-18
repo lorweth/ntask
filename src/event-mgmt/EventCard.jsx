@@ -4,6 +4,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { useNavigate } from 'react-router-dom';
 
+const filePath = process.env.REACT_APP_FILE_URL;
+
 export default function EventCard({ eventID, name, imageURL, startAt, endAt, members }) {
   const navigator = useNavigate();
 
@@ -34,7 +36,12 @@ export default function EventCard({ eventID, name, imageURL, startAt, endAt, mem
         {members && (
           <AvatarGroup size="sm" max={2}>
             {members.map((member) => (
-              <Avatar key={member.login} size="sm" name={member.login} src={member.avatarUrl} />
+              <Avatar
+                key={member.login}
+                size="sm"
+                name={member.login}
+                src={member.avatarUrl ? `${filePath}/${member.avatarUrl}` : ''}
+              />
             ))}
           </AvatarGroup>
         )}

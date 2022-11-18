@@ -25,6 +25,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { createTask, getTask, updateTask } from './eventMgmtSlice';
 import { EventStatus, EventStatusLabel } from './utils';
 
+const filePath = process.env.REACT_APP_FILE_URL;
+
 export default function EditTask() {
   const { eventID, taskID } = useParams();
   const isNew = taskID === undefined || taskID === null;
@@ -211,7 +213,7 @@ export default function EditTask() {
                   key={`member-${member.id}`}
                   onClick={() => onRemoveMember(member)}
                 >
-                  <Avatar name={member.name} src={member.avatarUrl} />
+                  <Avatar name={member.name} src={`${filePath}/${member.avatarUrl}`} />
                 </Box>
               ))}
             </Box>
@@ -252,7 +254,7 @@ export default function EditTask() {
                     <Avatar
                       key={`user-${user.id}`}
                       name={user.login}
-                      src={user.avatarUrl}
+                      src={user.avatarUrl ? `${filePath}/${user.avatarUrl}` : ''}
                       size="sm"
                       bg="teal.500"
                       color="whiteAlpha.900"
