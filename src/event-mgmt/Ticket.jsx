@@ -6,6 +6,8 @@ import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { convertTime } from './utils';
 
+const filePath = process.env.REACT_APP_FILE_URL;
+
 export const withTicket = (ticketType) => (props) => {
   if (ticketType === 'event') {
     const { name, startAt, endAt, members, onClickDetail } = props;
@@ -62,7 +64,12 @@ export default function Ticket({ name, startAt, endAt, members, onClickDetail, o
         {members && (
           <AvatarGroup size="sm" max={2}>
             {members.map((member) => (
-              <Avatar key={member.login} size="sm" name={member.login} src={member.avatarUrl} />
+              <Avatar
+                key={member.login}
+                size="sm"
+                name={member.login}
+                src={member.avatarUrl ? `${filePath}/${member.avatarUrl}` : ''}
+              />
             ))}
           </AvatarGroup>
         )}

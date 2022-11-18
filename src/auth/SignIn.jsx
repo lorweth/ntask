@@ -14,6 +14,7 @@ import {
   Flex,
   Image,
   Link,
+  Progress,
   ScaleFade,
   Text,
 } from '@chakra-ui/react';
@@ -33,7 +34,7 @@ const formRules = {
 
 export default function SignIn() {
   const dispatch = useDispatch();
-  const { errorMessage } = useSelector((state) => state.auth);
+  const { loading, errorMessage } = useSelector((state) => state.auth);
 
   const { control, handleSubmit } = useForm({
     defaultValues: {
@@ -87,6 +88,7 @@ export default function SignIn() {
               />
               <Text>Đăng nhập</Text>
             </Flex>
+            {loading && <Progress w="100%" size="sm" colorScheme="green" isIndeterminate />}
             {errorMessage && (
               <Alert status="error">
                 <AlertIcon />
