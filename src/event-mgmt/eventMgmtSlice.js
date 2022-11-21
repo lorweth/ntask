@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import StorageAPI from 'common/storageAPI';
 import { getMockTasks } from './mock-data';
-import { EventStatuses } from './utils';
+import { EventStatus } from './utils';
 
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -15,7 +15,8 @@ const initialState = {
   selectedTask: null,
   loading: false,
   updateSuccess: null,
-  errMsg: null,
+  deleteTaskSuccess: null,
+  errorMessage: null,
 };
 
 const updateOrder = (list, startIndex, endIndex) => {
@@ -50,7 +51,7 @@ const updateOrder = (list, startIndex, endIndex) => {
 export const fetchEvents = createAsyncThunk(
   'eventsMgmt/fetchEvents',
   async ({ page = 0, size = 30 }) =>
-    fetch(`${API_URL}/events?${new URLSearchParams({ page, size })}`, {
+    fetch(`${API_URL}/events/user?${new URLSearchParams({ page, size })}`, {
       method: 'GET',
       mode: 'cors',
       headers: {
@@ -199,6 +200,19 @@ export const updateTask = createAsyncThunk(
     }).then((res) => res.json())
 );
 
+export const deleteTask = createAsyncThunk('eventsMgmt/deleteTask', async (taskID) =>
+  fetch(`${API_URL}/tasks/${taskID}`, {
+    method: 'DELETE',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${
+        StorageAPI.local.get('authToken') || StorageAPI.session.get('authToken')
+      }`,
+    },
+  }).then((res) => res.ok)
+);
+
 const eventMgmtSlice = createSlice({
   name: 'eventsMgmt',
   initialState,
@@ -216,19 +230,20 @@ const eventMgmtSlice = createSlice({
     builder
       .addCase(fetchEvents.fulfilled, (state, action) => {
         const eventList = action.payload.content;
-        state.createdEvents = eventList.filter((event) => event.status === EventStatuses.CREATED);
+        state.createdEvents = eventList.filter((event) => event.status === EventStatus.CREATED);
         state.inprogressEvents = eventList.filter(
-          (event) => event.status === EventStatuses.IN_PROGRESS
+          (event) => event.status === EventStatus.IN_PROGRESS
         );
-        state.doneEvents = eventList.filter((event) => event.status === EventStatuses.DONE);
+        state.doneEvents = eventList.filter((event) => event.status === EventStatus.DONE);
         state.loading = false;
         state.updateSuccess = null;
+        state.deleteTaskSuccess = null;
       })
       .addCase(fetchEvents.pending, (state) => {
         state.loading = true;
       })
-      .addCase(fetchEvents.rejected, (state, action) => {
-        state.errMsg = action.error.message || 'Something went wrong';
+      .addCase(fetchEvents.rejected, (state) => {
+        state.errorMessage = 'Có lỗi xảy ra';
         state.loading = false;
       })
       .addCase(createEvent.fulfilled, (state) => {
@@ -239,9 +254,9 @@ const eventMgmtSlice = createSlice({
         state.loading = true;
         state.updateSuccess = null;
       })
-      .addCase(createEvent.rejected, (state, action) => {
+      .addCase(createEvent.rejected, (state) => {
         state.loading = false;
-        state.errMsg = action.error.message || 'Something went wrong';
+        state.errorMessage = 'Có lỗi xảy ra';
       })
       .addCase(getEvent.fulfilled, (state, action) => {
         state.loading = false;
@@ -251,20 +266,40 @@ const eventMgmtSlice = createSlice({
         state.loading = true;
         state.selectedEvent = null;
       })
-      .addCase(getEvent.rejected, (state, action) => {
+      .addCase(getEvent.rejected, (state) => {
         state.loading = false;
-        state.errMsg = action.error.message || 'Something went wrong';
+        state.errorMessage = 'Có lỗi xảy ra';
+      })
+      .addCase(updateEvent.fulfilled, (state) => {
+        state.loading = false;
+        state.updateSuccess = true;
+      })
+      .addCase(updateEvent.pending, (state) => {
+        state.loading = true;
+        state.updateSuccess = null;
+      })
+      .addCase(updateEvent.rejected, (state) => {
+        state.loading = false;
+        state.errorMessage = 'Có lỗi xảy ra';
+        state.updateSuccess = false;
       })
       .addCase(fetchUsers.fulfilled, (state, action) => {
         state.loading = false;
-        state.users = action.payload.content;
+        const users = action.payload.content;
+        if (users.length > 0) {
+          state.users = users;
+        } else {
+          state.users = [];
+          state.errorMessage = 'Không có người dùng nào';
+        }
       })
       .addCase(fetchUsers.pending, (state) => {
         state.loading = true;
+        state.errorMessage = null;
       })
-      .addCase(fetchUsers.rejected, (state, action) => {
+      .addCase(fetchUsers.rejected, (state) => {
         state.loading = false;
-        state.errMsg = action.error.message || 'Something went wrong';
+        state.errorMessage = 'Có lỗi xảy ra';
       })
       .addCase(fetchTasks.fulfilled, (state, action) => {
         state.loading = false;
@@ -274,9 +309,9 @@ const eventMgmtSlice = createSlice({
       .addCase(fetchTasks.pending, (state) => {
         state.loading = true;
       })
-      .addCase(fetchTasks.rejected, (state, action) => {
+      .addCase(fetchTasks.rejected, (state) => {
         state.loading = false;
-        state.errMsg = action.error.message || 'Something went wrong';
+        state.errorMessage = 'Có lỗi xảy ra';
       })
       .addCase(getTask.fulfilled, (state, action) => {
         state.loading = false;
@@ -286,9 +321,9 @@ const eventMgmtSlice = createSlice({
         state.loading = true;
         state.selectedTask = null;
       })
-      .addCase(getTask.rejected, (state, action) => {
+      .addCase(getTask.rejected, (state) => {
         state.loading = false;
-        state.errMsg = action.error.message || 'Something went wrong';
+        state.errorMessage = 'Có lỗi xảy ra';
       })
       .addCase(createTask.fulfilled, (state) => {
         state.loading = false;
@@ -298,9 +333,9 @@ const eventMgmtSlice = createSlice({
         state.loading = true;
         state.updateSuccess = null;
       })
-      .addCase(createTask.rejected, (state, action) => {
+      .addCase(createTask.rejected, (state) => {
         state.loading = false;
-        state.errMsg = action.error.message || 'Something went wrong';
+        state.errorMessage = 'Có lỗi xảy ra';
       })
       .addCase(updateTask.fulfilled, (state) => {
         state.loading = false;
@@ -310,9 +345,22 @@ const eventMgmtSlice = createSlice({
         state.loading = true;
         state.updateSuccess = null;
       })
-      .addCase(updateTask.rejected, (state, action) => {
+      .addCase(updateTask.rejected, (state) => {
         state.loading = false;
-        state.errMsg = action.error.message || 'Something went wrong';
+        state.errorMessage = 'Có lỗi xảy ra';
+      })
+      .addCase(deleteTask.fulfilled, (state, action) => {
+        state.loading = false;
+        state.deleteTaskSuccess = action.payload;
+      })
+      .addCase(deleteTask.pending, (state) => {
+        state.loading = true;
+        state.deleteTaskSuccess = null;
+      })
+      .addCase(deleteTask.rejected, (state) => {
+        state.loading = false;
+        state.deleteTaskSuccess = false;
+        state.errorMessage = 'Có lỗi xảy ra';
       });
   },
 });

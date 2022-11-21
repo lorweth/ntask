@@ -96,7 +96,7 @@ export const signup = createAsyncThunk('auth/signUp', async ({ login, name, emai
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ login, name, email, password }),
-  }).then((resp) => resp.json())
+  }).then((resp) => resp.ok)
 );
 
 export const updateProfile = createAsyncThunk(
@@ -123,19 +123,28 @@ const authSlice = createSlice({
     builder
       .addCase(authenticate.fulfilled, (state, action) => {
         state.loading = false;
-        state.userData = action.payload;
-        state.loginSuccess = true;
-        state.errorMessage = null;
+        const { payload } = action;
+        if (payload.message && payload.message.startsWith('error')) {
+          state.loginSuccess = false;
+          if (payload.status === 401) {
+            state.errorMessage = 'Tên đăng nhập hoặc mật khẩu không đúng';
+          } else {
+            state.errorMessage = 'Đã có lỗi xảy ra';
+          }
+        } else {
+          state.loginSuccess = true;
+          state.userData = payload;
+        }
       })
       .addCase(authenticate.pending, (state) => {
         state.loading = true;
         state.loginSuccess = null;
         state.errorMessage = null;
       })
-      .addCase(authenticate.rejected, (state, action) => {
+      .addCase(authenticate.rejected, (state) => {
         state.loading = false;
         state.loginSuccess = false;
-        state.errorMessage = action.error.message || 'Something went wrong';
+        state.errorMessage = 'Có lỗi xảy ra';
       })
       .addCase(getUserData.fulfilled, (state, action) => {
         state.loading = false;
@@ -149,10 +158,10 @@ const authSlice = createSlice({
         state.loginSuccess = null;
         state.errorMessage = null;
       })
-      .addCase(getUserData.rejected, (state, action) => {
+      .addCase(getUserData.rejected, (state) => {
         state.loading = false;
         state.loginSuccess = false;
-        state.errorMessage = action.error.message || 'Something went wrong';
+        state.errorMessage = 'Có lỗi xảy ra';
       })
       .addCase(signup.fulfilled, (state) => {
         state.loading = false;
@@ -161,9 +170,9 @@ const authSlice = createSlice({
         state.loading = true;
         state.errorMessage = null;
       })
-      .addCase(signup.rejected, (state, action) => {
+      .addCase(signup.rejected, (state) => {
         state.loading = false;
-        state.errorMessage = action.error.message || 'Something went wrong';
+        state.errorMessage = 'Có lỗi xảy ra';
       })
       .addCase(updateProfile.fulfilled, (state) => {
         state.loading = false;
@@ -173,10 +182,10 @@ const authSlice = createSlice({
         state.loading = true;
         state.updateSuccess = null;
       })
-      .addCase(updateProfile.rejected, (state, action) => {
+      .addCase(updateProfile.rejected, (state) => {
         state.loading = false;
         state.updateSuccess = false;
-        state.errorMessage = action.error.message || 'Something went wrong';
+        state.errorMessage = 'Có lỗi xảy ra';
       });
   },
 });

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Alert, AlertIcon, Box, Text } from '@chakra-ui/react';
 
-export default function TicketList({ title, data, onClickDetail, TicketComponent }) {
+export default function TicketList({ title, data, onClickDetail, onClickDelete, TicketComponent }) {
   return (
     <Box
       sx={{
@@ -21,7 +21,12 @@ export default function TicketList({ title, data, onClickDetail, TicketComponent
       {data && data.length !== 0 ? (
         <Box>
           {data.map((d) => (
-            <TicketComponent key={d.id} onClickDetail={() => onClickDetail(d.id)} {...d} />
+            <TicketComponent
+              key={d.id}
+              onClickDetail={() => onClickDetail(d.id)}
+              onClickDelete={() => onClickDelete(d.id)}
+              {...d}
+            />
           ))}
         </Box>
       ) : (

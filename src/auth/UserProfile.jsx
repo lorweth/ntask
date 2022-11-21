@@ -26,7 +26,6 @@ export default function EditProfile() {
   const { userData } = useSelector((state) => state.auth);
   const { control, handleSubmit, setValue } = useForm({
     defaultValues: {
-      login: '',
       name: '',
       avatarUrl: '',
       bio: '',
@@ -35,7 +34,6 @@ export default function EditProfile() {
   });
 
   useEffect(() => {
-    setValue('login', userData.login);
     setValue('name', userData.name);
     setValue('avatarUrl', userData.avatarUrl);
     setValue('bio', userData.bio);
@@ -49,20 +47,17 @@ export default function EditProfile() {
   };
 
   const formRules = {
-    login: {
-      required: 'Login is required',
-    },
     name: {
-      required: 'Name is required',
+      required: 'Tên là bắt buộc',
     },
     avatarUrl: {
-      required: 'Avatar is required',
+      required: 'Ảnh đại diện là bắt buộc',
     },
     bio: {
-      required: 'Bio is required',
+      required: 'Giới tính là bắt buộc',
     },
     email: {
-      required: 'Email is required',
+      required: 'Email là bắt buộc',
       pattern: {
         value:
           /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
@@ -83,7 +78,7 @@ export default function EditProfile() {
               color="whiteAlpha.900"
               icon={<FontAwesomeIcon icon={regular('user')} />}
             />
-            &nbsp;Your profile
+            &nbsp;Thông tin cá nhân
           </Text>
         </ModalHeader>
         <ModalBody>
@@ -103,7 +98,7 @@ export default function EditProfile() {
               control={control}
               name="name"
               type="text"
-              label="Fullname"
+              label="Tên người dùng"
               rules={formRules.name}
             />
 
@@ -111,7 +106,7 @@ export default function EditProfile() {
               control={control}
               name="avatarUrl"
               type="text"
-              label="Avatar URL"
+              label="Ảnh đại diện"
               rules={formRules.avatarUrl}
             />
 
@@ -119,28 +114,12 @@ export default function EditProfile() {
               control={control}
               name="bio"
               type="text"
-              label="Bio"
+              label="Giới tính"
               rules={formRules.bio}
             />
 
-            <ValidatedInput
-              control={control}
-              name="login"
-              type="text"
-              label="Username"
-              rules={formRules.login}
-            />
-
-            <ValidatedInput
-              control={control}
-              name="email"
-              type="email"
-              label="Email"
-              rules={formRules.email}
-            />
-
             <Button type="submit" width="100%" mt={2}>
-              Submit
+              Đồng ý
             </Button>
           </Box>
         </ModalBody>

@@ -21,6 +21,7 @@ export default function Chat() {
   });
   const [messages, setMessages] = useState([]);
   const [stompClient, setStompClient] = useState(null);
+  const [currSub, setCurrSub] = useState(null);
   const chatInputRef = useRef({});
 
   // Get all events as room chats
@@ -30,10 +31,17 @@ export default function Chat() {
     // Connect to websocket
     const socket = new SockJS(WS_URL);
     const client = over(socket);
-    client.connect({}, (frame) => {
-      // eslint-disable-next-line no-console
-      console.log(`Connected: ${frame}`);
-    });
+    client.connect(
+      {},
+      (frame) => {
+        // eslint-disable-next-line no-console
+        console.log(`Connected: ${frame}`);
+      },
+      (err) => {
+        // eslint-disable-next-line no-console
+        console.log(err);
+      }
+    );
     setStompClient(client); // store stomp client
   }, []);
 
@@ -51,10 +59,18 @@ export default function Chat() {
   useEffect(() => {
     if (selectedRoom) {
       dispatch(fetchMessage({ eventID: selectedRoom.id, page: 0, size: 30 }));
+      // Unsubscribe previous subscription
+      if (currSub) {
+        currSub.unsubscribe();
+      }
+
       // Subscribe to room chat
-      stompClient.subscribe(`/topic/${selectedRoom.id}`, (payload) => {
+      const stompSub = stompClient.subscribe(`/topic/${selectedRoom.id}`, (payload) => {
+        // eslint-disable-next-line no-console
+        console.log(payload);
         setMessages((msg) => [JSON.parse(payload.body), ...msg]);
       });
+      setCurrSub(stompSub);
     }
   }, [selectedRoom]);
 
@@ -65,7 +81,7 @@ export default function Chat() {
   }, [msgList]);
 
   const onClickRoom = (room) => {
-    dispatch(setSelectedRoom(room));
+    setSelectedRoom(room);
   };
 
   const onSendMessage = (e) => {

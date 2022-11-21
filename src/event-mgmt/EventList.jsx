@@ -3,7 +3,7 @@ import { Box, Progress, Text, theme } from '@chakra-ui/react';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { useSelector } from 'react-redux';
 import EventCard from './EventCard';
-import { EventStatuses } from './utils';
+import { EventStatus } from './utils';
 
 export default function EventList({ title, dropgableID, eventStatus }) {
   const [events, setEvents] = useState([]);
@@ -12,11 +12,11 @@ export default function EventList({ title, dropgableID, eventStatus }) {
   );
 
   useEffect(() => {
-    if (eventStatus === EventStatuses.CREATED) {
+    if (eventStatus === EventStatus.CREATED) {
       setEvents(createdEvents);
-    } else if (eventStatus === EventStatuses.IN_PROGRESS) {
+    } else if (eventStatus === EventStatus.IN_PROGRESS) {
       setEvents(inprogressEvents);
-    } else if (eventStatus === EventStatuses.DONE) {
+    } else if (eventStatus === EventStatus.DONE) {
       setEvents(doneEvents);
     }
   }, [createdEvents, inprogressEvents, doneEvents, eventStatus]);

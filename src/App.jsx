@@ -55,7 +55,7 @@ export default function App() {
   const location = useLocation();
 
   const { haveToken } = useAuth();
-  const { userData, loginSuccess } = useSelector((state) => state.auth);
+  const { userData, loginSuccess, errorMessage } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (!haveToken) {
@@ -67,10 +67,10 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (loginSuccess) {
+    if (loginSuccess && !errorMessage) {
       navigator('/');
     }
-  }, [loginSuccess]);
+  }, [loginSuccess, errorMessage]);
 
   return (
     <StyledContainer>
@@ -81,7 +81,7 @@ export default function App() {
             <AppHeaderUser
               username={userData?.login}
               role={userData?.authorities?.[0]}
-              avatarLink={userData?.avatarUrl}
+              avatarLink={`${userData?.avatarUrl}`}
             />
           </AppHeader>
           <AppContent>

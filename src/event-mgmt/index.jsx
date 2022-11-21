@@ -5,12 +5,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { useDispatch, useSelector } from 'react-redux';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { toastify } from 'common/toastify';
 import EventList from './EventList';
-import { EventStatuses, EventStatusLabels } from './utils';
+import { EventStatus, EventStatusLabel, EventStatusTitle } from './utils';
 import { fetchEvents, reorder } from './eventMgmtSlice';
 import CreateEvent from './CreateEvent';
 import EventDetail from './EventDetail';
 import EditTask from './EditTask';
+import DeleteTask from './DeleteTask';
 
 function EventMgmt() {
   const dispatch = useDispatch();
@@ -89,18 +91,18 @@ function EventMgmt() {
         >
           <EventList
             title="Sắp diễn ra"
-            dropgableID={EventStatusLabels[EventStatuses.CREATED]}
-            eventStatus={EventStatuses.CREATED}
+            dropgableID={EventStatusTitle[EventStatusLabel.CREATED]}
+            eventStatus={EventStatus.CREATED}
           />
           <EventList
             title="Đang diễn ra"
-            dropgableID={EventStatusLabels[EventStatuses.IN_PROGRESS]}
-            eventStatus={EventStatuses.IN_PROGRESS}
+            dropgableID={EventStatusTitle[EventStatusLabel.IN_PROGRESS]}
+            eventStatus={EventStatus.IN_PROGRESS}
           />
           <EventList
             title="Đã kết thúc"
-            dropgableID={EventStatusLabels[EventStatuses.DONE]}
-            eventStatus={EventStatuses.DONE}
+            dropgableID={EventStatusTitle[EventStatusLabel.DONE]}
+            eventStatus={EventStatus.DONE}
           />
         </Box>
       </DragDropContext>
@@ -111,7 +113,7 @@ function EventMgmt() {
 export default function EventMgmtPage() {
   const dispatch = useDispatch();
   const location = useLocation();
-  const { updateSuccess } = useSelector((state) => state.eventMgmt);
+  const { updateSuccess, deleteSuccess, errorMessage } = useSelector((state) => state.eventMgmt);
 
   useEffect(() => {
     dispatch(fetchEvents({ page: 0, size: 30 }));
@@ -120,8 +122,22 @@ export default function EventMgmtPage() {
   useEffect(() => {
     if (updateSuccess) {
       dispatch(fetchEvents({ page: 0, size: 30 }));
+      toastify({ title: 'Thành công', description: 'Cập nhật thành công', status: 'success' });
     }
   }, [updateSuccess]);
+
+  useEffect(() => {
+    if (deleteSuccess) {
+      dispatch(fetchEvents({ page: 0, size: 30 }));
+      toastify({ title: 'Thành công', description: 'Xóa công việc thành công', status: 'success' });
+    }
+  }, [deleteSuccess]);
+
+  useEffect(() => {
+    if (errorMessage) {
+      toastify({ title: 'Lỗi', description: errorMessage, status: 'error' });
+    }
+  }, [errorMessage]);
 
   return (
     <>
@@ -129,11 +145,13 @@ export default function EventMgmtPage() {
         <Route path="/" element={<EventMgmt />} />
         <Route path="/:eventID" element={<EventDetail />} />
       </Routes>
+
       {location.state?.backgroundLocation && (
         <Routes>
           <Route path="/new" element={<CreateEvent />} />
           <Route path="/:eventID/tasks/new" element={<EditTask />} />
           <Route path="/:eventID/tasks/:taskID" element={<EditTask />} />
+          <Route path="/:eventID/tasks/:taskID/delete" element={<DeleteTask />} />
         </Routes>
       )}
     </>

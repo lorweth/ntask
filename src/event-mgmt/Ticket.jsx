@@ -6,6 +6,8 @@ import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { convertTime } from './utils';
 
+const filePath = process.env.REACT_APP_FILE_URL;
+
 export const withTicket = (ticketType) => (props) => {
   if (ticketType === 'event') {
     const { name, startAt, endAt, members, onClickDetail } = props;
@@ -20,7 +22,7 @@ export const withTicket = (ticketType) => (props) => {
     );
   }
   if (ticketType === 'task') {
-    const { name, startAt, endAt, assignees, onClickDetail } = props;
+    const { name, startAt, endAt, assignees, onClickDetail, onClickDelete } = props;
     return (
       <Ticket
         name={name}
@@ -28,12 +30,13 @@ export const withTicket = (ticketType) => (props) => {
         endAt={endAt}
         members={assignees}
         onClickDetail={onClickDetail}
+        onClickDelete={onClickDelete}
       />
     );
   }
 };
 
-export default function Ticket({ name, startAt, endAt, members, onClickDetail }) {
+export default function Ticket({ name, startAt, endAt, members, onClickDetail, onClickDelete }) {
   return (
     <Flex
       sx={{
@@ -61,14 +64,25 @@ export default function Ticket({ name, startAt, endAt, members, onClickDetail })
         {members && (
           <AvatarGroup size="sm" max={2}>
             {members.map((member) => (
-              <Avatar key={member.login} size="sm" name={member.login} src={member.avatarUrl} />
+              <Avatar
+                key={member.login}
+                size="sm"
+                name={member.login}
+                src={member.avatarUrl ? `${filePath}/${member.avatarUrl}` : ''}
+              />
             ))}
           </AvatarGroup>
         )}
       </Flex>
       <Flex justifyContent="flex-end" mt={3}>
-        <Button colorScheme="green" size="sm" onClick={onClickDetail}>
-          Chi tiết
+        <Button colorScheme="teal" size="md" onClick={onClickDetail}>
+          <FontAwesomeIcon icon={solid('pen')} />
+          &nbsp;Chi tiết
+        </Button>
+        &nbsp;
+        <Button colorScheme="red" size="md" onClick={onClickDelete}>
+          <FontAwesomeIcon icon={solid('trash')} />
+          &nbsp;Xóa
         </Button>
       </Flex>
     </Flex>

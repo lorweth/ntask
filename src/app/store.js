@@ -1,7 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import rootReducer from 'rootReducer';
 import loggerMiddleware from 'app/logger-middleware';
-import notificationMiddleware from './notification-middleware';
 
 const store = configureStore({
   reducer: rootReducer,
@@ -11,7 +10,7 @@ const store = configureStore({
         // Ignore these field paths in all actions
         ignoredActionPaths: ['payload.config', 'payload.request', 'error', 'meta.arg'],
       },
-    }).concat(loggerMiddleware, notificationMiddleware),
+    }).concat(loggerMiddleware),
 });
 
 const getStore = () => store;

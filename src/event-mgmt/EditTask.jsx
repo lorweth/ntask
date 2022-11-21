@@ -23,7 +23,9 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { useDispatch, useSelector } from 'react-redux';
 import { createTask, getTask, updateTask } from './eventMgmtSlice';
-import { EventStatuses } from './utils';
+import { EventStatus, EventStatusLabel } from './utils';
+
+const filePath = process.env.REACT_APP_FILE_URL;
 
 export default function EditTask() {
   const { eventID, taskID } = useParams();
@@ -38,30 +40,28 @@ export default function EditTask() {
       description: '',
       startAt: dayjs().format('YYYY-MM-DDTHH:mm'),
       endAt: dayjs().add(1, 'hour').format('YYYY-MM-DDTHH:mm'),
-      status: EventStatuses.CREATED,
+      status: EventStatus.CREATED,
     },
   });
   const startAtRef = useRef({});
-  startAtRef.current = watch('startAt', '');
+  startAtRef.current = watch('startAt', dayjs().format('YYYY-MM-DDTHH:mm'));
   const [assignees, setAssignees] = useState([]);
 
   const formRules = {
     name: {
-      required: 'Name is required',
-    },
-    description: {
-      required: 'Description is required',
+      required: 'Bắt buộc nhập tên công việc',
     },
     startAt: {
-      required: 'Start time is required',
+      required: 'Bắt buộc nhập thời gian bắt đầu',
     },
     endAt: {
-      required: 'End time is required',
+      required: 'Bắt buộc nhập thời gian kết thúc',
       validate: (value) =>
-        dayjs(value).isAfter(dayjs(startAtRef.current)) || 'End time must be after start time',
+        dayjs(value).isAfter(dayjs(startAtRef.current)) ||
+        'Thời gian kết thúc phải sau thời gian bắt đầu',
     },
     status: {
-      required: 'Status is required',
+      required: 'Bắt buộc nhập trạng thái',
     },
   };
 
@@ -185,9 +185,11 @@ export default function EditTask() {
                   <FormControl isInvalid={!!error}>
                     <FormLabel>Trạng thái</FormLabel>
                     <Select onChange={onChange} onBlur={onBlur} value={value} ref={ref}>
-                      <option value={EventStatuses.CREATED}>{EventStatuses.CREATED}</option>
-                      <option value={EventStatuses.IN_PROGRESS}>{EventStatuses.IN_PROGRESS}</option>
-                      <option value={EventStatuses.DONE}>{EventStatuses.DONE}</option>
+                      <option value={EventStatus.CREATED}>{EventStatusLabel.CREATED}</option>
+                      <option value={EventStatus.IN_PROGRESS}>
+                        {EventStatusLabel.IN_PROGRESS}
+                      </option>
+                      <option value={EventStatus.DONE}>{EventStatusLabel.DONE}</option>
                     </Select>
                     {error && <FormErrorMessage>{error?.message}</FormErrorMessage>}
                   </FormControl>
@@ -211,7 +213,7 @@ export default function EditTask() {
                   key={`member-${member.id}`}
                   onClick={() => onRemoveMember(member)}
                 >
-                  <Avatar name={member.name} src={member.avatarUrl} />
+                  <Avatar name={member.name} src={`${filePath}/${member.avatarUrl}`} />
                 </Box>
               ))}
             </Box>
@@ -252,7 +254,7 @@ export default function EditTask() {
                     <Avatar
                       key={`user-${user.id}`}
                       name={user.login}
-                      src={user.avatarUrl}
+                      src={user.avatarUrl ? `${filePath}/${user.avatarUrl}` : ''}
                       size="sm"
                       bg="teal.500"
                       color="whiteAlpha.900"
