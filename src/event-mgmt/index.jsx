@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Box, Button, Heading, Input, Text, theme } from '@chakra-ui/react';
+import { Box, Button, Heading, Text, theme } from '@chakra-ui/react';
 import { solid } from '@fortawesome/fontawesome-svg-core/import.macro';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { DragDropContext } from 'react-beautiful-dnd';
@@ -56,16 +56,11 @@ function EventMgmt() {
         flexDirection: 'column',
       }}
     >
-      <Heading color={theme.colors.green[500]} variant="h1" size="lg">
-        Sự kiện
-      </Heading>
       <Box sx={{ display: 'flex', flexDir: 'row', justifyContent: 'space-between', mt: 5, gap: 5 }}>
-        <Box sx={{ display: 'flex', flexDir: 'row', flex: 1 }} as="form" noValidate>
-          <Input placeholder="Tìm kiếm..." />
-          <Button type="submit">
-            <FontAwesomeIcon icon={solid('magnifying-glass')} />
-          </Button>
-        </Box>
+        <Heading color={theme.colors.green[500]} variant="h1" size="lg">
+          Sự kiện
+        </Heading>
+
         <Button colorScheme="green" onClick={onClickNewEvent}>
           <FontAwesomeIcon icon={solid('plus')} />
           &nbsp;

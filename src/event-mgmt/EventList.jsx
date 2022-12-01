@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Progress, Text, theme } from '@chakra-ui/react';
+import { Avatar, Box, Progress, Stat, StatLabel, StatNumber, theme } from '@chakra-ui/react';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import { useSelector } from 'react-redux';
+import AppWidget from 'components/AppWidget';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { regular } from '@fortawesome/fontawesome-svg-core/import.macro';
 import EventCard from './EventCard';
 import { EventStatus } from './utils';
 
@@ -21,6 +24,20 @@ export default function EventList({ title, dropgableID, eventStatus }) {
     }
   }, [createdEvents, inprogressEvents, doneEvents, eventStatus]);
 
+  const getWidgetIcon = () => {
+    let icon = null;
+    if (eventStatus === EventStatus.CREATED) {
+      icon = regular('calendar-plus');
+    }
+    if (eventStatus === EventStatus.IN_PROGRESS) {
+      icon = regular('calendar');
+    }
+    if (eventStatus === EventStatus.DONE) {
+      icon = regular('calendar-check');
+    }
+    return <FontAwesomeIcon icon={icon} color="white" />;
+  };
+
   return (
     <Box
       sx={{
@@ -30,12 +47,20 @@ export default function EventList({ title, dropgableID, eventStatus }) {
         gap: '1rem',
       }}
     >
-      <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-        <Text fontSize="xl" fontWeight="500">
-          {title}
-        </Text>
-        <Text>{events?.length || 0}</Text>
-      </Box>
+      <AppWidget
+        sx={{
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'row',
+          gap: '.5rem',
+        }}
+      >
+        <Avatar size="lg" backgroundColor="green.500" icon={getWidgetIcon()} />
+        <Stat>
+          <StatLabel>{title}</StatLabel>
+          <StatNumber>{events?.length || 0}</StatNumber>
+        </Stat>
+      </AppWidget>
       <Droppable droppableId={dropgableID}>
         {(provided, snapshot) => (
           <Box
